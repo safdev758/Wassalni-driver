@@ -1,0 +1,171 @@
+// Arabic (RTL) - Algeria Localization
+export const arStrings = {
+  // App
+  appName: 'وصالني',
+
+  // Auth
+  auth: {
+    enterTheFleet: 'ادخل\nالأسطول.',
+    authenticateBiometric: 'قم بالمصادقة عبر الرابط البيومتري الآمن للوصول إلى مركبتك، تعيينات المسار النشط، ومحفظة الأرباح.',
+    sensorActive: 'المستشعر نشط',
+    tapScanner: 'اضغط على الماسح للتحقق من الهوية',
+    orAuthenticateVia: 'أو المصادقة عبر',
+    continue: 'متابعة',
+    verifyIdentity: 'تحقق\nمن الهوية.',
+    enterMobileNumber: 'أدخل رقم هاتفك لتلقي رمز مرور آمن لمرة واحدة.',
+    resendCodeIn: 'إعادة إرسال الرمز خلال',
+    resendCode: 'إعادة إرسال الرمز',
+    verify: 'تحقق',
+  },
+
+  // Onboarding
+  onboarding: {
+    identityVerification: 'التحقق من الهوية',
+    basics: 'الأساسيات',
+    identity: 'الهوية',
+    vehicle: 'المركبة',
+    personalInformation: 'المعلومات الشخصية',
+    fullLegalName: 'الاسم الكامل القانوني',
+    asItAppearsOnLicense: 'كما يظهر في رخصتك',
+    emailAddress: 'عنوان البريد الإلكتروني',
+    youAtDomain: 'you@domain.com',
+    homeAddress: 'عنوان المنزل',
+    streetAddress: 'عنوان الشارع',
+    city: 'المدينة',
+    zip: 'الرمز البريدي',
+    driversLicense: 'رخصة القيادة',
+    uploadClearImages: 'قم بتحميل صور واضحة ومضيئة جيداً لبطاقة هويتك الرسمية.',
+    frontSide: 'الوجه الأمامي',
+    backSide: 'الوجه الخلفي',
+    livenessCheck: 'التحقق من الحيوية',
+    takeQuickSelfie: 'التقط صورة سريعة لمطابقتها مع هويتك.',
+    captureSelfie: 'التقط صورة شخصية',
+    saveDraft: 'حفظ المسودة',
+    continueToVehicle: 'متابعة إلى المركبة',
+    vehicleIdentity: 'هوية\nالمركبة.',
+    precisionParamount: 'الدقة أمر بالغ الأهمية. سجل تفاصيل مركبتك لضمان تجربة سلسة لعملائنا.',
+    makeAndModel: 'الصانع والطراز',
+    make: 'الصانع',
+    makePlaceholder: 'مثال: تويوتا',
+    model: 'الطراز',
+    modelPlaceholder: 'مثال: كامري',
+    year: 'السنة',
+    yearPlaceholder: 'مثال: 2024',
+    licensePlate: 'لوحة الترخيص',
+    licensePlatePlaceholder: 'مثال: ABC-1234',
+    documentation: 'الوثائق',
+    uploadClearCopies: 'قم بتحميل نسخ واضحة ومقروءة من وثائقك الحالية.',
+    proofOfInsurance: 'إثمان التأمين',
+    tapToUpload: 'اضغط لتحميل الملف',
+    tapToUploadFile: 'اضغط لتحميل الملف',
+    vehicleRegistration: 'تسجيل المركبة',
+    continueToBackgroundCheck: 'متابعة إلى فحص الخلفية',
+    step2Of4: 'الخطوة 2 من 4',
+  },
+
+  // Main
+  main: {
+    readyToDrive: 'جاهز للقيادة؟',
+    goOnline: 'ابدأ العمل',
+    goOffline: 'توقف عن العمل',
+    highDemand: 'طلب عالي في منطقتك حالياً.',
+    todaysEarnings: 'أرباح اليوم',
+    todayEarnings: 'أرباح اليوم',
+    vsYesterday: 'مقارنة بالأمس',
+    currentRating: 'التقييم الحالي',
+    tripsCompleted: 'الرحلات المكتملة',
+    home: 'الرئيسية',
+    activity: 'النشاط',
+    wallet: 'المحفظة',
+    profile: 'الملف الشخصي',
+    opportunities: 'الفرص',
+    highDemandDowntown: 'طلب عالي: وسط المدينة',
+    slideForEmergency: 'اسحب للطوارئ',
+    earnings: 'الأرباح',
+    trips: 'الرحلات',
+    safety: 'السلامة',
+  },
+
+  // Ride Request
+  rideRequest: {
+    seconds: 'ثانية',
+    blackSUV: 'سيارة دفع رباعي سوداء',
+    premiumRider: 'راكب مميز',
+    pickup: 'نقطة الالتقاط',
+    minsAway: 'دقيقة',
+    estFare: 'الأجر المقدر',
+    trip: 'رحلة',
+    reject: 'رفض',
+    acceptRide: 'قبول الرحلة',
+  },
+
+  // Earnings
+  earnings: {
+    title: 'الأرباح',
+    availableBalance: 'الرصيد المتاح والسجل',
+    cashOutNow: 'سحب الآن',
+    tripEarnings: 'أرباح الرحلات',
+    tips: 'الإكراميات',
+    bonuses: 'المكافآت',
+    recentActivity: 'النشاط الأخير',
+    viewAll: 'عرض الكل',
+    tripTo: 'رحلة إلى',
+    includesTip: 'تشمل',
+    weeklyPayout: 'الدفع الأسبوعي',
+    processed: 'تمت المعالجة',
+  },
+
+  // Trip History
+  tripHistory: {
+    title: 'سجل الرحلات',
+    reviewPerformance: 'راجع أداءك السابق وأرباحك.',
+    weeklyEarnings: 'الأرباح الأسبوعية',
+    trips: 'الرحلات',
+    onlineHours: 'ساعات العمل',
+    vsLastWeek: 'مقارنة بالأسبوع الماضي',
+    performance: 'الأداء',
+    acceptanceRate: 'معدل القبول',
+    cancellationRate: 'معدل الإلغاء',
+    recentTrips: 'الرحلات الأخيرة',
+    filter: 'تصفية',
+    luxeBlack: 'لوكس الأسود',
+    luxeStandard: 'لوكس العادي',
+    luxeSUV: 'لوكس دفع رباعي',
+    loadMoreTrips: 'تحميل المزيد من الرحلات',
+  },
+
+  // Common
+  common: {
+    save: 'حفظ',
+    edit: 'تعديل',
+    delete: 'حذف',
+    cancel: 'إلغاء',
+    confirm: 'تأكيد',
+    back: 'رجوع',
+    next: 'التالي',
+    done: 'تم',
+    loading: 'جاري التحميل...',
+    error: 'خطأ',
+    success: 'نجح',
+    retry: 'إعادة المحاولة',
+  },
+
+  // Drafts
+  drafts: {
+    title: 'المسودات',
+    subtitle: 'طلباتك المحفوظة',
+    personalInfoDraft: 'المعلومات الشخصية',
+    savedYesterday: 'محفوظ بالأمس',
+    noDrafts: 'لا توجد مسودات بعد',
+    noDraftsDescription: 'ابدأ طلباً جديداً للبدء',
+    startNewApplication: 'بدء طلب جديد',
+  },
+
+  // Currency - Algerian Dinar
+  currency: {
+    code: 'DZD',
+    symbol: 'دج',
+  },
+} as const;
+
+export default arStrings;
