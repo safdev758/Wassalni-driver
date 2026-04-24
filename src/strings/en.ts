@@ -88,14 +88,29 @@ export const enStrings = {
   // Ride Request
   rideRequest: {
     seconds: 'Seconds',
-    blackSUV: 'Black SUV',
-    premiumRider: 'Premium Rider',
+    blackSUV: 'Economy',
+    premiumRider: 'Verified Rider',
     pickup: 'Pickup',
     minsAway: 'Mins Away',
     estFare: 'Est. Fare',
     trip: 'trip',
     reject: 'Reject',
     acceptRide: 'Accept Ride',
+  },
+
+  // Ride Navigation
+  rideNavigation: {
+    pickup: 'Pickup',
+    dropoff: 'Dropoff',
+    fare: 'Fare',
+    distance: 'Distance',
+    eta: 'ETA',
+    completeRide: 'Complete Ride',
+    cancelRide: 'Cancel Ride',
+    cancelConfirm: 'Are you sure you want to cancel this ride?',
+    rideCompleted: 'Ride completed',
+    rideCompletedDescription: 'Earnings have been added to your wallet.',
+    noActiveRide: 'No active ride',
   },
 
   // Earnings
@@ -164,6 +179,24 @@ export const enStrings = {
   currency: {
     code: 'DZD',
     symbol: 'DA',
+  },
+
+  // Permissions
+  permissions: {
+    cameraDeniedTitle: 'Camera access required',
+    cameraDeniedMessage: 'Enable camera access in your device settings to capture documents and selfies.',
+    photoLibraryDeniedTitle: 'Photo access required',
+    photoLibraryDeniedMessage: 'Enable photo library access in your device settings to upload documents.',
+    failedPickImage: 'Failed to pick image. Please try again.',
+    failedTakePhoto: 'Failed to take photo. Please try again.',
+  },
+
+  // Onboarding completion flow
+  onboardingComplete: {
+    title: 'Onboarding Complete',
+    description: 'Your documents and vehicle information have been submitted. Welcome to Wasselni!',
+    skipTitle: 'Skip Uploads',
+    skipDescription: 'Testing mode: document uploads will be marked as optional. Continue to the dashboard?',
   },
 } as const;
 

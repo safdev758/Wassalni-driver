@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, spacing } from '../../theme';
 import { useDriver } from '../../context/DriverContext';
+import { formatCurrency } from '../../utils/format';
 
 export default function RadarDashboardScreen() {
   const navigation = useNavigation();
@@ -54,7 +55,7 @@ export default function RadarDashboardScreen() {
           {/* Earnings Summary */}
           <View style={styles.earningsPill}>
             <Text style={styles.earningsLabel}>{t('main.todayEarnings')}</Text>
-            <Text style={styles.earningsAmount}>${driverState.todayEarnings.toFixed(2)}</Text>
+            <Text style={styles.earningsAmount}>{formatCurrency(driverState.todayEarnings)}</Text>
             <View style={styles.tripsIndicator}>
               <View style={styles.dot} />
               <Text style={styles.tripsText}>{driverState.todayTrips} {t('main.trips')}</Text>
@@ -75,7 +76,7 @@ export default function RadarDashboardScreen() {
           {/* Emergency Slide */}
           <View style={styles.emergencySlide}>
             <TouchableOpacity style={styles.emergencyButton}>
-              <Text style={styles.emergencyIcon}>SOS</Text>
+              <Ionicons name="warning" size={24} color={colors.onError} />
             </TouchableOpacity>
             <Ionicons name="chevron-forward" size={20} color={colors.onSurfaceVariant} style={styles.slideArrow} />
             <Text style={styles.emergencyText}>{t('main.slideForEmergency')}</Text>

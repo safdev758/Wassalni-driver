@@ -1,6 +1,6 @@
-# Kinetic Driver App API Contracts
+# Wasselni Driver App API Contracts
 
-This document outlines the API contracts for all buttons and actions in the Kinetic Driver App.
+This document outlines the API contracts for all buttons and actions in the Wasselni Driver App.
 
 ---
 

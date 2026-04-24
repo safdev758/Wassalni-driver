@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, spacing } from '../../theme';
-import { useDriver } from '../../context/DriverContext';
+import { formatCurrency } from '../../utils/format';
 
 export default function TripHistoryScreen() {
   const navigation = useNavigation();
@@ -97,8 +97,7 @@ export default function TripHistoryScreen() {
           <View style={[styles.summaryCard, styles.earningsHero]}>
             <Text style={styles.summaryLabel}>{t('tripHistory.weeklyEarnings')}</Text>
             <View style={styles.earningsValue}>
-              <Text style={styles.earningsBig}>$1,458</Text>
-              <Text style={styles.earningsSmall}>.50</Text>
+              <Text style={styles.earningsBig}>{formatCurrency(1458.50)}</Text>
             </View>
             <View style={styles.earningsStats}>
               <View style={styles.earningsStat}>
@@ -165,7 +164,7 @@ export default function TripHistoryScreen() {
                 </View>
               </View>
               <View style={styles.tripRight}>
-                <Text style={styles.tripAmount}>$45.20</Text>
+                <Text style={styles.tripAmount}>{formatCurrency(45.20)}</Text>
                 <Text style={styles.tripDuration}>32 min</Text>
               </View>
             </TouchableOpacity>
@@ -182,7 +181,7 @@ export default function TripHistoryScreen() {
                 </View>
               </View>
               <View style={styles.tripRight}>
-                <Text style={styles.tripAmount}>$28.50</Text>
+                <Text style={styles.tripAmount}>{formatCurrency(28.50)}</Text>
                 <Text style={styles.tripDuration}>24 min</Text>
               </View>
             </TouchableOpacity>
@@ -199,7 +198,7 @@ export default function TripHistoryScreen() {
                 </View>
               </View>
               <View style={styles.tripRight}>
-                <Text style={styles.tripAmount}>$85.00</Text>
+                <Text style={styles.tripAmount}>{formatCurrency(85)}</Text>
                 <Text style={styles.tripDuration}>55 min</Text>
               </View>
             </TouchableOpacity>

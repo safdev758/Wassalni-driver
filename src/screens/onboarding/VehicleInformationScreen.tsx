@@ -1,21 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView, Platform, Alert, StatusBar } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { colors, typography, spacing } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
-import type { RootStackParamList } from '../../types/navigation';
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'VehicleInformation'>;
 
 export default function VehicleInformationScreen() {
-  const navigation = useNavigation<NavigationProp>();
   const { t } = useTranslation();
-  const { driver } = useAuth();
+  const { completeOnboarding } = useAuth();
   const [make, setMake] = useState('');
   const [model, setModel] = useState('');
   const [year, setYear] = useState('');
@@ -25,41 +19,42 @@ export default function VehicleInformationScreen() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [validationResult, setValidationResult] = useState<string | null>(null);
 
+  const finishOnboarding = async () => {
+    try {
+      await completeOnboarding();
+    } catch (error) {
+      console.error('Failed to complete onboarding:', error);
+    }
+  };
+
   const handleContinue = () => {
-    // Allow navigation without images - upload is optional for testing
     Alert.alert(
-      'Onboarding Complete',
-      'Your vehicle information has been submitted. Please restart the app to access the main dashboard.',
+      t('onboardingComplete.title'),
+      t('onboardingComplete.description'),
       [
-        { 
-          text: 'OK', 
+        {
+          text: t('common.done'),
           onPress: () => {
-            navigation.navigate('PersonalDocuments');
-          }
-        }
-      ]
+            void finishOnboarding();
+          },
+        },
+      ],
     );
   };
 
   const skipUpload = () => {
-    console.log('Skip button pressed');
     Alert.alert(
-      'Skip Upload (Testing Mode)',
-      'Document upload will be marked as optional. Continue?',
+      t('onboardingComplete.skipTitle'),
+      t('onboardingComplete.skipDescription'),
       [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Continue', 
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.confirm'),
           onPress: () => {
-            console.log('Navigating to PersonalDocuments (skipping upload)');
-            Alert.alert(
-              'Onboarding Complete',
-              'Skipped uploads. Please restart the app.',
-              [{ text: 'OK', onPress: () => navigation.navigate('PersonalDocuments') }]
-            );
-          }
-        }
-      ]
+            void finishOnboarding();
+          },
+        },
+      ],
     );
   };
 
@@ -81,6 +76,15 @@ export default function VehicleInformationScreen() {
 
   const pickImage = async (type: 'insurance' | 'registration') => {
     try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert(
+          t('permissions.photoLibraryDeniedTitle'),
+          t('permissions.photoLibraryDeniedMessage'),
+        );
+        return;
+      }
+
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
@@ -97,12 +101,22 @@ export default function VehicleInformationScreen() {
         }
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to pick image');
+      console.error('pickImage error:', error);
+      Alert.alert(t('common.error'), t('permissions.failedPickImage'));
     }
   };
 
   const takePhoto = async (type: 'insurance' | 'registration') => {
     try {
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert(
+          t('permissions.cameraDeniedTitle'),
+          t('permissions.cameraDeniedMessage'),
+        );
+        return;
+      }
+
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
@@ -119,7 +133,8 @@ export default function VehicleInformationScreen() {
         }
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to take photo');
+      console.error('takePhoto error:', error);
+      Alert.alert(t('common.error'), t('permissions.failedTakePhoto'));
     }
   };
 
