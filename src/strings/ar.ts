@@ -1,7 +1,7 @@
 // Arabic (RTL) - Algeria Localization
 export const arStrings = {
   // App
-  appName: 'وصالني',
+  appName: 'وصلني',
 
   // Auth
   auth: {
