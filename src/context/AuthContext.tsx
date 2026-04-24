@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
-import { Platform } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { colors } from '../theme';
 
 interface Driver {
   id: string;
@@ -18,6 +19,8 @@ interface AuthContextType {
   isLoading: boolean;
   login: (phone: string) => Promise<void>;
   verifyOTP: (phone: string, code: string) => Promise<void>;
+  completeOnboarding: () => Promise<void>;
+  updateDriver: (updates: Partial<Driver>) => Promise<void>;
   logout: () => Promise<void>;
   clearAuthData: () => Promise<void>;
 }
@@ -60,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const token = await getStorageItem(AUTH_TOKEN_KEY);
       const driverData = await getStorageItem(DRIVER_DATA_KEY);
-      
+
       if (token && driverData) {
         setDriver(JSON.parse(driverData));
       }
@@ -71,26 +74,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const persistDriver = async (next: Driver) => {
+    await setStorageItem(DRIVER_DATA_KEY, JSON.stringify(next));
+    setDriver(next);
+  };
+
   const login = async (phone: string) => {
     // API call to send OTP
     // For now, simulate
     console.log('Sending OTP to:', phone);
   };
 
-  const verifyOTP = async (phone: string, code: string) => {
+  const verifyOTP = async (phone: string, _code: string) => {
     // API call to verify OTP
     // For now, simulate
     const mockDriver: Driver = {
       id: 'drv_001',
       phone,
-      name: 'Driver',
+      name: '',
       isVerified: true,
       isOnboarded: false,
     };
-    
+
     await setStorageItem(AUTH_TOKEN_KEY, 'mock_token');
-    await setStorageItem(DRIVER_DATA_KEY, JSON.stringify(mockDriver));
-    setDriver(mockDriver);
+    await persistDriver(mockDriver);
+  };
+
+  const completeOnboarding = async () => {
+    if (!driver) {
+      return;
+    }
+    await persistDriver({ ...driver, isOnboarded: true });
+  };
+
+  const updateDriver = async (updates: Partial<Driver>) => {
+    if (!driver) {
+      return;
+    }
+    await persistDriver({ ...driver, ...updates });
   };
 
   const logout = async () => {
@@ -106,7 +127,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   if (isLoading) {
-    return null;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
   }
 
   return (
@@ -117,6 +142,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         login,
         verifyOTP,
+        completeOnboarding,
+        updateDriver,
         logout,
         clearAuthData,
       }}
@@ -125,6 +152,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     </AuthContext.Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: colors.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export function useAuth() {
   const context = useContext(AuthContext);

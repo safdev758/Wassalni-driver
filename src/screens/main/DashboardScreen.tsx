@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, spacing } from '../../theme';
 import { useDriver } from '../../context/DriverContext';
+import { formatCurrency } from '../../utils/format';
 
 export default function DashboardScreen() {
   const navigation = useNavigation();
@@ -73,7 +74,7 @@ export default function DashboardScreen() {
               <Ionicons name="wallet-outline" size={24} color={colors.primary} />
             </View>
             <View>
-              <Text style={styles.earningsAmount}>${driverState.todayEarnings.toFixed(2)}</Text>
+              <Text style={styles.earningsAmount}>{formatCurrency(driverState.todayEarnings)}</Text>
               <Text style={styles.earningsChange}>
                 <Ionicons name="trending-up" size={14} color={colors.secondary} /> +12% {t('main.vsYesterday')}
               </Text>

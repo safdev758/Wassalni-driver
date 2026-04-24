@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, spacing } from '../../theme';
-import { useDriver } from '../../context/DriverContext';
+import { formatCurrency } from '../../utils/format';
 
 export default function EarningsScreen() {
   const navigation = useNavigation();
@@ -41,7 +41,7 @@ export default function EarningsScreen() {
         <View style={styles.balanceCard}>
           <View style={styles.balanceContent}>
             <Text style={styles.balanceLabel}>{t('earnings.availableBalance')}</Text>
-            <Text style={styles.balanceAmount}>$1,248.50</Text>
+            <Text style={styles.balanceAmount}>{formatCurrency(1248.50)}</Text>
           </View>
           <TouchableOpacity style={styles.cashOutButton}>
             <Text style={styles.cashOutText}>{t('earnings.cashOutNow')}</Text>
@@ -55,7 +55,7 @@ export default function EarningsScreen() {
               <Ionicons name="time" size={20} color={colors.onSurfaceVariant} />
               <Text style={styles.breakdownLabel}>{t('earnings.tripEarnings')}</Text>
             </View>
-            <Text style={styles.earningsCardValue}>$890.00</Text>
+            <Text style={styles.earningsCardValue}>{formatCurrency(890)}</Text>
           </View>
 
           <View style={styles.earningsCard}>
@@ -63,7 +63,7 @@ export default function EarningsScreen() {
               <Ionicons name="cash" size={20} color={colors.primary} />
               <Text style={styles.breakdownLabel}>{t('earnings.tips')}</Text>
             </View>
-            <Text style={styles.earningsCardValue}>$235.50</Text>
+            <Text style={styles.earningsCardValue}>{formatCurrency(235.50)}</Text>
           </View>
 
           <View style={styles.earningsCard}>
@@ -71,7 +71,7 @@ export default function EarningsScreen() {
               <Ionicons name="gift" size={20} color={colors.onSurfaceVariant} />
               <Text style={styles.breakdownLabel}>{t('earnings.bonuses')}</Text>
             </View>
-            <Text style={styles.earningsCardValue}>$123.00</Text>
+            <Text style={styles.earningsCardValue}>{formatCurrency(123)}</Text>
           </View>
         </View>
 
@@ -97,8 +97,8 @@ export default function EarningsScreen() {
                 </View>
               </View>
               <View style={styles.transactionRight}>
-                <Text style={styles.transactionAmount}>+$84.50</Text>
-                <Text style={styles.transactionTip}>{t('earnings.includesTip', { tip: '$15' })}</Text>
+                <Text style={styles.transactionAmount}>+{formatCurrency(84.50)}</Text>
+                <Text style={styles.transactionTip}>{t('earnings.includesTip', { tip: formatCurrency(15) })}</Text>
               </View>
             </TouchableOpacity>
 
@@ -114,8 +114,8 @@ export default function EarningsScreen() {
                 </View>
               </View>
               <View style={styles.transactionRight}>
-                <Text style={styles.transactionAmount}>+$142.00</Text>
-                <Text style={styles.transactionTip}>{t('earnings.includesTip', { tip: '$25' })}</Text>
+                <Text style={styles.transactionAmount}>+{formatCurrency(142)}</Text>
+                <Text style={styles.transactionTip}>{t('earnings.includesTip', { tip: formatCurrency(25) })}</Text>
               </View>
             </TouchableOpacity>
 
@@ -131,7 +131,7 @@ export default function EarningsScreen() {
                 </View>
               </View>
               <View style={styles.transactionRight}>
-                <Text style={[styles.transactionAmount, styles.transactionAmountNegative]}>-$2,450.00</Text>
+                <Text style={[styles.transactionAmount, styles.transactionAmountNegative]}>-{formatCurrency(2450)}</Text>
                 <Text style={styles.payoutStatus}>{t('earnings.processed')}</Text>
               </View>
             </TouchableOpacity>

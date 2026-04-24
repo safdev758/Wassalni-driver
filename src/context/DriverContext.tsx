@@ -44,9 +44,9 @@ const DriverContext = createContext<DriverContextType | undefined>(undefined);
 const initialState: DriverState = {
   isOnline: false,
   currentRide: null,
-  todayEarnings: 142.50,
-  todayTrips: 12,
-  rating: 4.98,
+  todayEarnings: 0,
+  todayTrips: 0,
+  rating: 0,
 };
 
 export function DriverProvider({ children }: { children: React.ReactNode }) {

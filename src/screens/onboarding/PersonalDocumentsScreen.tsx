@@ -14,8 +14,8 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'PersonalDoc
 export default function PersonalDocumentsScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { t } = useTranslation();
-  const [fullName, setFullName] = useState('Marcus Thorne');
-  const [email, setEmail] = useState('marcus.thorne@example.com');
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
   const [zip, setZip] = useState('');
@@ -69,6 +69,15 @@ export default function PersonalDocumentsScreen() {
 
   const pickImage = async (type: 'front' | 'back' | 'selfie') => {
     try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert(
+          t('permissions.photoLibraryDeniedTitle'),
+          t('permissions.photoLibraryDeniedMessage'),
+        );
+        return;
+      }
+
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
@@ -87,12 +96,22 @@ export default function PersonalDocumentsScreen() {
         }
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to pick image');
+      console.error('pickImage error:', error);
+      Alert.alert(t('common.error'), t('permissions.failedPickImage'));
     }
   };
 
   const takePhoto = async (type: 'front' | 'back' | 'selfie') => {
     try {
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert(
+          t('permissions.cameraDeniedTitle'),
+          t('permissions.cameraDeniedMessage'),
+        );
+        return;
+      }
+
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
@@ -111,7 +130,8 @@ export default function PersonalDocumentsScreen() {
         }
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to take photo');
+      console.error('takePhoto error:', error);
+      Alert.alert(t('common.error'), t('permissions.failedTakePhoto'));
     }
   };
 

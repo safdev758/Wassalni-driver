@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Kinetic Driver",
-    "slug": "kinetic-driver",
+    "name": "Wasselni Driver",
+    "slug": "wassalni-driver",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,17 +16,44 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kinetic.driver"
+      "bundleIdentifier": "com.wassalni.driver",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Wasselni Driver needs camera access to capture photos of your driver's license, vehicle registration, insurance, and a selfie for identity verification.",
+        "NSPhotoLibraryUsageDescription": "Wasselni Driver needs access to your photo library to upload document images for onboarding and verification.",
+        "NSLocationWhenInUseUsageDescription": "Wasselni Driver uses your location to show nearby ride requests and navigate to pickups while you are online."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#131313"
       },
-      "package": "com.kinetic.driver"
+      "package": "com.wassalni.driver",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Wasselni Driver needs access to your photos to upload document images.",
+          "cameraPermission": "Wasselni Driver needs camera access to capture documents and selfies for verification."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Wasselni Driver needs camera access to capture documents and selfies for verification."
+        }
+      ]
+    ]
   }
 }

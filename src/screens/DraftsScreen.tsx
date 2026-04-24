@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, spacing } from '../theme';
 import type { RootStackParamList } from '../types/navigation';
 
@@ -13,74 +15,81 @@ export default function DraftsScreen() {
   const { t } = useTranslation();
 
   return (
-    <View style={styles.container}>
-      {/* TopAppBar */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.menuButton}>
-          <Text style={styles.menuIcon}>Menu</Text>
-        </TouchableOpacity>
-        <Text style={styles.brand}>{t('appName')}</Text>
-        <TouchableOpacity style={styles.profileButton}>
-          <Image
-            source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBAtjEMugxEf4Qq5IDYmgF0k9OjDAbRqD5beythW6MtLUQHBW4-o3lJL1AkFyifZLyeAg9UzKUdqjWU4liGL4Y6cgalv_LekfwD9fUtakRIxPMRb649KdsgJrjFQZyDXsy6SMwVPkHi-jQ36JuY7dzVcQYq0N8I4PPW49K_GaEWaDRyf8vJoqST9u5lSYYRwWqmb4heuWvtwRnAf2dkHIg_moe071ICIFLfCaVGh5ByEeFKIIUXm0kP9GVa-Pf-RtO6DFfJuU3GLVX1' }}
-            style={styles.profileImage}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.title}>{t('drafts.title')}</Text>
-          <Text style={styles.subtitle}>{t('drafts.subtitle')}</Text>
-        </View>
-
-        {/* Drafts List */}
-        <View style={styles.draftsList}>
-          {/* Draft Item 1 */}
-          <TouchableOpacity style={styles.draftItem}>
-            <View style={styles.draftLeft}>
-              <View style={styles.draftIcon}>
-                <Text style={styles.draftIconText}>Document</Text>
-              </View>
-              <View>
-                <Text style={styles.draftTitle}>{t('drafts.personalInfoDraft')}</Text>
-                <Text style={styles.draftDate}>{t('drafts.savedYesterday')}</Text>
-              </View>
-            </View>
-            <View style={styles.draftRight}>
-              <TouchableOpacity style={styles.editButton}>
-                <Text style={styles.editText}>{t('common.edit')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.deleteButton}>
-                <Text style={styles.deleteText}>{t('common.delete')}</Text>
-              </TouchableOpacity>
-            </View>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" backgroundColor={colors.surface} />
+      <View style={styles.container}>
+        {/* TopAppBar */}
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.menuButton}>
+            <Ionicons name="menu" size={24} color={colors.onSurface} />
           </TouchableOpacity>
-
-          {/* Empty State */}
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>Folder</Text>
-            <Text style={styles.emptyTitle}>{t('drafts.noDrafts')}</Text>
-            <Text style={styles.emptyDescription}>{t('drafts.noDraftsDescription')}</Text>
-          </View>
+          <Text style={styles.brand}>{t('appName')}</Text>
+          <TouchableOpacity style={styles.profileButton}>
+            <Image
+              source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBAtjEMugxEf4Qq5IDYmgF0k9OjDAbRqD5beythW6MtLUQHBW4-o3lJL1AkFyifZLyeAg9UzKUdqjWU4liGL4Y6cgalv_LekfwD9fUtakRIxPMRb649KdsgJrjFQZyDXsy6SMwVPkHi-jQ36JuY7dzVcQYq0N8I4PPW49K_GaEWaDRyf8vJoqST9u5lSYYRwWqmb4heuWvtwRnAf2dkHIg_moe071ICIFLfCaVGh5ByEeFKIIUXm0kP9GVa-Pf-RtO6DFfJuU3GLVX1' }}
+              style={styles.profileImage}
+            />
+          </TouchableOpacity>
         </View>
-      </ScrollView>
 
-      {/* Bottom Action */}
-      <View style={styles.bottomAction}>
-        <TouchableOpacity 
-          style={styles.continueButton} 
-          onPress={() => navigation.navigate('PersonalDocuments')}
-        >
-          <Text style={styles.continueText}>{t('drafts.startNewApplication')}</Text>
-        </TouchableOpacity>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {/* Header */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.title}>{t('drafts.title')}</Text>
+            <Text style={styles.subtitle}>{t('drafts.subtitle')}</Text>
+          </View>
+
+          {/* Drafts List */}
+          <View style={styles.draftsList}>
+            {/* Draft Item 1 */}
+            <TouchableOpacity style={styles.draftItem}>
+              <View style={styles.draftLeft}>
+                <View style={styles.draftIcon}>
+                  <Ionicons name="document-text" size={24} color={colors.primary} />
+                </View>
+                <View>
+                  <Text style={styles.draftTitle}>{t('drafts.personalInfoDraft')}</Text>
+                  <Text style={styles.draftDate}>{t('drafts.savedYesterday')}</Text>
+                </View>
+              </View>
+              <View style={styles.draftRight}>
+                <TouchableOpacity style={styles.editButton}>
+                  <Text style={styles.editText}>{t('common.edit')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.deleteButton}>
+                  <Text style={styles.deleteText}>{t('common.delete')}</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+
+            {/* Empty State */}
+            <View style={styles.emptyState}>
+              <Ionicons name="folder-open" size={48} color={colors.onSurfaceVariant} style={styles.emptyIcon} />
+              <Text style={styles.emptyTitle}>{t('drafts.noDrafts')}</Text>
+              <Text style={styles.emptyDescription}>{t('drafts.noDraftsDescription')}</Text>
+            </View>
+          </View>
+        </ScrollView>
+
+        {/* Bottom Action */}
+        <View style={styles.bottomAction}>
+          <TouchableOpacity
+            style={styles.continueButton}
+            onPress={() => navigation.navigate('PersonalDocuments')}
+          >
+            <Text style={styles.continueText}>{t('drafts.startNewApplication')}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.surface,
+  },
   container: {
     flex: 1,
     backgroundColor: colors.surface,
@@ -99,10 +108,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  menuIcon: {
-    fontSize: 16,
-    color: colors.onSurface,
   },
   brand: {
     ...typography.headlineSmall,
@@ -163,10 +168,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  draftIconText: {
-    fontSize: 12,
-    color: colors.onSurfaceVariant,
-  },
   draftTitle: {
     ...typography.headlineSmall,
     color: colors.onSurface,
@@ -208,8 +209,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xxxl,
   },
   emptyIcon: {
-    fontSize: 48,
-    color: colors.onSurfaceVariant,
     marginBottom: spacing.md,
   },
   emptyTitle: {

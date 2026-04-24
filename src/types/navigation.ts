@@ -7,6 +7,7 @@ export type RootStackParamList = {
   Drafts: undefined;
   MainTabs: undefined;
   RideRequest: undefined;
+  RideNavigation: undefined;
 };
 
 export type MainTabParamList = {

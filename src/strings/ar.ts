@@ -89,14 +89,29 @@ export const arStrings = {
   // Ride Request
   rideRequest: {
     seconds: 'ثانية',
-    blackSUV: 'سيارة دفع رباعي سوداء',
-    premiumRider: 'راكب مميز',
+    blackSUV: 'اقتصادية',
+    premiumRider: 'راكب موثق',
     pickup: 'نقطة الالتقاط',
     minsAway: 'دقيقة',
     estFare: 'الأجر المقدر',
     trip: 'رحلة',
     reject: 'رفض',
     acceptRide: 'قبول الرحلة',
+  },
+
+  // Ride Navigation
+  rideNavigation: {
+    pickup: 'نقطة الالتقاط',
+    dropoff: 'الوجهة',
+    fare: 'السعر',
+    distance: 'المسافة',
+    eta: 'الوقت',
+    completeRide: 'إنهاء الرحلة',
+    cancelRide: 'إلغاء الرحلة',
+    cancelConfirm: 'هل أنت متأكد من إلغاء هذه الرحلة؟',
+    rideCompleted: 'تمت الرحلة',
+    rideCompletedDescription: 'تمت إضافة الأرباح إلى محفظتك.',
+    noActiveRide: 'لا توجد رحلة نشطة',
   },
 
   // Earnings
@@ -165,6 +180,24 @@ export const arStrings = {
   currency: {
     code: 'DZD',
     symbol: 'دج',
+  },
+
+  // Permissions
+  permissions: {
+    cameraDeniedTitle: 'صلاحية الكاميرا مطلوبة',
+    cameraDeniedMessage: 'فعّل صلاحية الكاميرا من إعدادات الجهاز لالتقاط الوثائق والصور الشخصية.',
+    photoLibraryDeniedTitle: 'صلاحية الصور مطلوبة',
+    photoLibraryDeniedMessage: 'فعّل صلاحية مكتبة الصور من إعدادات الجهاز لرفع الوثائق.',
+    failedPickImage: 'فشل اختيار الصورة. يرجى المحاولة مرة أخرى.',
+    failedTakePhoto: 'فشل التقاط الصورة. يرجى المحاولة مرة أخرى.',
+  },
+
+  // Onboarding completion flow
+  onboardingComplete: {
+    title: 'اكتمل التسجيل',
+    description: 'تم إرسال وثائقك ومعلومات مركبتك. مرحباً بك في وصالني!',
+    skipTitle: 'تخطي الرفع',
+    skipDescription: 'وضع الاختبار: سيتم اعتبار رفع الوثائق اختياريًا. هل تريد المتابعة إلى الصفحة الرئيسية؟',
   },
 } as const;
 
