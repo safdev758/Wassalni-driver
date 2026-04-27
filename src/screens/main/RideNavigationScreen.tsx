@@ -47,10 +47,10 @@ export default function RideNavigationScreen() {
           onPress: async () => {
             try {
               await cancelRide();
+              navigation.navigate('MainTabs');
             } catch (error) {
               console.error('Failed to cancel ride:', error);
             }
-            navigation.navigate('MainTabs');
           },
         },
       ],

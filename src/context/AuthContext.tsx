@@ -74,8 +74,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             phone: profile.phone,
             name: profile.name || '',
             email: profile.email,
-            isVerified: profile.is_verified ?? true,
-            isOnboarded: profile.is_onboarded ?? true,
+            isVerified: profile.is_verified ?? false,
+            isOnboarded: profile.is_onboarded ?? false,
             rating: profile.rating,
             status: profile.status,
           };
