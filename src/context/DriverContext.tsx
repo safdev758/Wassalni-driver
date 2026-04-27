@@ -39,6 +39,7 @@ interface DriverContextType {
   acceptRide: (ride: Ride) => Promise<void>;
   rejectRide: () => void;
   completeRide: () => Promise<void>;
+  cancelRide: (reason?: string) => Promise<void>;
   updateEarnings: (amount: number) => void;
   sendCounterOffer: (rideId: string, price: number) => Promise<void>;
   fetchEarnings: () => Promise<void>;
@@ -138,16 +139,22 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
   const completeRide = async () => {
     const currentRide = driverState.currentRide;
     if (!currentRide) return;
-    try {
-      await rideAPI.complete(currentRide.id);
-      setDriverState(prev => ({
-        ...prev,
-        currentRide: null,
-        todayTrips: prev.todayTrips + 1,
-      }));
-    } catch (error) {
-      console.error('Failed to complete ride:', error);
-    }
+    await rideAPI.complete(currentRide.id);
+    setDriverState(prev => ({
+      ...prev,
+      currentRide: null,
+      todayTrips: prev.todayTrips + 1,
+    }));
+  };
+
+  const cancelRide = async (reason?: string) => {
+    const currentRide = driverState.currentRide;
+    if (!currentRide) return;
+    await rideAPI.cancel(currentRide.id, reason);
+    setDriverState(prev => ({
+      ...prev,
+      currentRide: null,
+    }));
   };
 
   const updateEarnings = (amount: number) => {
@@ -182,6 +189,7 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
         acceptRide,
         rejectRide,
         completeRide,
+        cancelRide,
         updateEarnings,
         sendCounterOffer,
         fetchEarnings,

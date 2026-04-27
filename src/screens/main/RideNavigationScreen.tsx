@@ -15,15 +15,15 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'RideNavigat
 export default function RideNavigationScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { t } = useTranslation();
-  const { driverState, completeRide, updateEarnings } = useDriver();
+  const { driverState, completeRide, cancelRide, updateEarnings } = useDriver();
   const ride = driverState.currentRide;
 
   const handleComplete = async () => {
-    if (ride) {
-      updateEarnings(ride.estimatedFare);
-    }
     try {
       await completeRide();
+      if (ride) {
+        updateEarnings(ride.estimatedFare);
+      }
       Alert.alert(
         t('rideNavigation.rideCompleted'),
         t('rideNavigation.rideCompletedDescription'),
@@ -46,7 +46,7 @@ export default function RideNavigationScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await completeRide();
+              await cancelRide();
             } catch (error) {
               console.error('Failed to cancel ride:', error);
             }
