@@ -73,12 +73,7 @@ export default function RideNavigationScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <StatusBar barStyle="light-content" backgroundColor={colors.surface} />
       <View style={styles.container}>
-        <Image
-          source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDF1qOZj3o2y0JvTHkFNkPbkmDygHjyCy3ccUmptYIDGntv_7GROy0FWzlsK9MSbmSQKLiaaMkZ1kQdDEfocfLmrT-I2U5drbeW-FC7E1ZXZ8wBm-FssO-fs1EdF_T6mjPcPglimoOUVOs2F_E892oDiUoJsz5tWyPjY-Id0u2oAVknf4Dwekt7rZiNCbw_gXgV5lLftfRAvhsaH521lX83QGMflWhbBFK5ci-MUrCMoTuLmtrKfK9Fwh7O1iSmkdX-D0jGdTc_QLM' }}
-          style={styles.mapBackground}
-          resizeMode="cover"
-        />
-        <View style={styles.mapOverlay} />
+        <View style={styles.mapBackground} />
 
         <View style={styles.header}>
           <TouchableOpacity style={styles.headerButton} onPress={handleCancel}>
@@ -171,14 +166,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-  },
-  mapOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: `${colors.surface}66`,
+    backgroundColor: '#1a1c1e',
   },
   header: {
     flexDirection: 'row',
@@ -244,7 +232,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   riderName: {
-    ...typography.headlineSmall,
+    ...typography.titleMedium,
     color: colors.onSurface,
     fontWeight: '700',
   },
@@ -319,7 +307,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
   },
   metricValue: {
-    ...typography.headlineSmall,
+    ...typography.titleLarge,
     color: colors.onSurface,
     fontWeight: '700',
     marginTop: 4,
@@ -334,9 +322,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   primaryButtonText: {
-    ...typography.headlineSmall,
+    ...typography.titleMedium,
     color: colors.surfaceContainerLowest,
     fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   emptyContainer: {
     flex: 1,
@@ -346,7 +336,7 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
   },
   emptyTitle: {
-    ...typography.headlineSmall,
+    ...typography.titleLarge,
     color: colors.onSurface,
     fontWeight: '600',
     textAlign: 'center',

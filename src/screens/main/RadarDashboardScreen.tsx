@@ -1,55 +1,116 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, StatusBar } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, StatusBar, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../types/navigation';
 import { useTranslation } from 'react-i18next';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import MapView, { Marker, PROVIDER_DEFAULT } from 'react-native-maps';
+import * as Location from 'expo-location';
 import { colors, typography, spacing } from '../../theme';
 import { useDriver } from '../../context/DriverContext';
 import { formatCurrency } from '../../utils/format';
 
+const TAB_BAR_HEIGHT = 64;
+
+const darkMapStyle = [
+  { elementType: 'geometry', stylers: [{ color: '#1d1d1d' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#e2e2e2' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#1d1d1d' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#2a2a2a' }] },
+  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#3b67ff' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#131313' }] },
+];
+
 export default function RadarDashboardScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const { driverState, setOnline } = useDriver();
+
+  const [location, setLocation] = useState<{ latitude: number; longitude: number }>({
+    latitude: 36.7538,
+    longitude: 3.0588,
+  });
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert('Location permission denied');
+          return;
+        }
+        const currentLocation = await Location.getCurrentPositionAsync({});
+        setLocation({
+          latitude: currentLocation.coords.latitude,
+          longitude: currentLocation.coords.longitude,
+        });
+      } catch (error) {
+        console.log('Error getting location:', error);
+      }
+    })();
+  }, []);
 
   const handleGoOnline = () => {
     setOnline(!driverState.isOnline);
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.surface} />
-      <View style={styles.container}>
-        {/* Map Background */}
-        <View style={styles.mapBg}>
-          <View style={styles.surgeAreaHigh} />
-          <View style={styles.surgeAreaMed} />
-          
-          {/* Driver Pin */}
-          <View style={styles.driverPin}>
-            <View style={styles.driverPinInner}>
-              <Ionicons name="car" size={24} color={colors.onSurface} />
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+
+      {/* Real Map Background */}
+      <MapView
+        provider={PROVIDER_DEFAULT}
+        style={styles.map}
+        initialRegion={{
+          latitude: location.latitude,
+          longitude: location.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+        region={{
+          latitude: location.latitude,
+          longitude: location.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+        customMapStyle={darkMapStyle}
+      >
+        <Marker
+          coordinate={{ latitude: location.latitude, longitude: location.longitude }}
+          title={t('appName')}
+        >
+          <View style={styles.markerContainer}>
+            <View style={styles.markerPulse} />
+            <View style={styles.markerDot}>
+              <Ionicons name="car" size={14} color={colors.surface} />
             </View>
-            <View style={styles.driverStatus}>
-              <Text style={styles.driverStatusText}>{driverState.isOnline ? t('main.goOffline') : t('main.goOnline')}</Text>
-            </View>
+            <View style={styles.markerStem} />
+            <View style={styles.markerShadow} />
+          </View>
+        </Marker>
+      </MapView>
+
+      {/* Top Safe Area Overlay */}
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <View style={styles.header}>
+          <Text style={styles.brand}>{t('appName')}</Text>
+          <View style={styles.headerRight}>
+            <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('Notifications')}>
+              <Ionicons name="notifications" size={24} color={colors.onSurface} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('Settings')}>
+              <Ionicons name="person" size={24} color={colors.onSurface} />
+            </TouchableOpacity>
           </View>
         </View>
-
-      {/* TopAppBar */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton}>
-          <Ionicons name="menu" size={24} color={colors.primary} />
-        </TouchableOpacity>
-        <Text style={styles.brand}>{t('appName')}</Text>
-        <TouchableOpacity style={[styles.headerButton, styles.profileButton]}>
-          <Ionicons name="person" size={24} color={colors.primary} />
-        </TouchableOpacity>
-      </View>
+      </SafeAreaView>
 
       {/* UI Overlay */}
-      <View style={styles.overlay}>
+      <View style={[styles.overlay, { paddingBottom: TAB_BAR_HEIGHT + insets.bottom + 24 }]}>
         {/* Top Stats Banner */}
         <View style={styles.topBanner}>
           {/* Earnings Summary */}
@@ -78,16 +139,15 @@ export default function RadarDashboardScreen() {
             <TouchableOpacity style={styles.emergencyButton}>
               <Ionicons name="warning" size={24} color={colors.onError} />
             </TouchableOpacity>
-            <Ionicons name="chevron-forward" size={20} color={colors.onSurfaceVariant} style={styles.slideArrow} />
             <Text style={styles.emergencyText}>{t('main.slideForEmergency')}</Text>
           </View>
 
           {/* Go Online Button */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[
               styles.goOnlineButton,
               driverState.isOnline && styles.goOnlineButtonActive,
-            ]} 
+            ]}
             onPress={handleGoOnline}
             activeOpacity={0.8}
           >
@@ -96,101 +156,93 @@ export default function RadarDashboardScreen() {
           </TouchableOpacity>
         </View>
       </View>
-
-      </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
   container: {
     flex: 1,
     backgroundColor: colors.surface,
   },
-  mapBg: {
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+
+  /* ── Marker (copied from rider) ── */
+  markerContainer: {
+    alignItems: 'center',
+  },
+  markerPulse: {
+    position: 'absolute',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.primary + '40',
+  },
+  markerDot: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 4,
+    borderColor: colors.surface,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    elevation: 8,
+  },
+  markerStem: {
+    width: 4,
+    height: 32,
+    backgroundColor: colors.primary,
+    opacity: 0.5,
+    marginTop: -4,
+  },
+  markerShadow: {
+    width: 12,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#000',
+    opacity: 0.6,
+    marginTop: -2,
+  },
+
+  /* ── Safe Area + Header ── */
+  safeArea: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0,
-    backgroundColor: '#1a1c1e',
-  },
-  surgeAreaHigh: {
-    position: 'absolute',
-    top: '30%',
-    left: '20%',
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: `${colors.error}30`,
-  },
-  surgeAreaMed: {
-    position: 'absolute',
-    top: '50%',
-    right: '10%',
-    width: 400,
-    height: 400,
-    borderRadius: 200,
-    backgroundColor: `${colors.primary}20`,
-  },
-  driverPin: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: [{ translateX: -24 }, { translateY: -24 }],
-    alignItems: 'center',
-  },
-  driverPinInner: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.surfaceContainerHigh,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: colors.surface,
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.3,
-    shadowRadius: 24,
-    elevation: 12,
-  },
-  driverStatus: {
-    backgroundColor: `${colors.surface}80`,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 16,
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: `${colors.outlineVariant}20`,
-  },
-  driverStatusText: {
-    ...typography.labelSmall,
-    color: colors.onSurface,
-    textTransform: 'uppercase',
-    letterSpacing: 2,
+    zIndex: 40,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-    backgroundColor: `${colors.surface}B3`,
+    paddingTop: spacing.md,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   headerButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.surface + 'CC',
     alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    elevation: 8,
   },
   brand: {
     ...typography.headlineSmall,
@@ -198,15 +250,18 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: 2,
   },
-  profileButton: {
-    backgroundColor: colors.surfaceContainerHigh,
-  },
+
+  /* ── Overlay ── */
   overlay: {
-    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'space-between',
-    paddingTop: 80,
-    paddingBottom: spacing.xl,
+    paddingTop: 120,
     paddingHorizontal: spacing.md,
+    pointerEvents: 'box-none',
   },
   topBanner: {
     flexDirection: 'row',
@@ -214,10 +269,15 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   earningsPill: {
-    backgroundColor: `${colors.surfaceContainerHigh}CC`,
+    backgroundColor: colors.surfaceContainerHigh + 'CC',
     padding: spacing.md,
     borderRadius: 24,
     minWidth: 140,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 32,
+    elevation: 6,
   },
   earningsLabel: {
     ...typography.labelSmall,
@@ -252,16 +312,18 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   opportunityBadge: {
-    backgroundColor: `${colors.surfaceBright}B8`,
+    backgroundColor: colors.surfaceBright + 'B8',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-  },
-  slideArrow: {
-    marginHorizontal: spacing.sm,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 4,
   },
   opportunityText: {
     ...typography.bodySmall,
@@ -271,16 +333,20 @@ const styles = StyleSheet.create({
   bottomActions: {
     alignItems: 'center',
     gap: spacing.lg,
-    marginBottom: spacing.xl,
   },
   emergencySlide: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: `${colors.surfaceContainer}99`,
+    backgroundColor: colors.surfaceContainer + '99',
     padding: spacing.sm,
     borderRadius: 24,
     width: '100%',
     maxWidth: 350,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 24,
+    elevation: 6,
   },
   emergencyButton: {
     width: 48,
@@ -290,11 +356,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  emergencyIcon: {
-    fontSize: 24,
-  },
   emergencyText: {
-    ...typography.headlineSmall,
+    ...typography.labelMedium,
     color: colors.onSurfaceVariant,
     textTransform: 'uppercase',
     letterSpacing: 2,
@@ -321,7 +384,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.error,
   },
   goOnlineText: {
-    ...typography.headlineSmall,
+    ...typography.labelLarge,
     color: colors.surfaceContainerLowest,
     fontWeight: '700',
     textTransform: 'uppercase',

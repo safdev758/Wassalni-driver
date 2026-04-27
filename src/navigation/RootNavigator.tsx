@@ -1,8 +1,10 @@
 import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator, type BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { colors } from '../theme';
@@ -23,6 +25,10 @@ import DashboardScreen from '../screens/main/DashboardScreen';
 import RadarDashboardScreen from '../screens/main/RadarDashboardScreen';
 import RideRequestScreen from '../screens/main/RideRequestScreen';
 import RideNavigationScreen from '../screens/main/RideNavigationScreen';
+import SettingsScreen from '../screens/main/SettingsScreen';
+import HelpScreen from '../screens/profile/HelpScreen';
+import TermsOfServiceScreen from '../screens/profile/TermsOfServiceScreen';
+import NotificationsScreen from '../screens/profile/NotificationsScreen';
 
 // Earnings Screens
 import EarningsScreen from '../screens/earnings/EarningsScreen';
@@ -33,64 +39,116 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 
 type TabIconName = keyof typeof Ionicons.glyphMap;
 
-const TAB_ICONS: Record<keyof MainTabParamList, { active: TabIconName; inactive: TabIconName }> = {
-  RadarDashboard: { active: 'home', inactive: 'home-outline' },
-  TripHistory: { active: 'list', inactive: 'list-outline' },
-  Earnings: { active: 'wallet', inactive: 'wallet-outline' },
-  Dashboard: { active: 'person', inactive: 'person-outline' },
+const TAB_CONFIG: { name: keyof MainTabParamList; activeIcon: TabIconName; inactiveIcon: TabIconName; labelKey: string }[] = [
+  { name: 'RadarDashboard', activeIcon: 'navigate', inactiveIcon: 'navigate-outline', labelKey: 'main.home' },
+  { name: 'TripHistory', activeIcon: 'time', inactiveIcon: 'time-outline', labelKey: 'main.activity' },
+  { name: 'Earnings', activeIcon: 'wallet', inactiveIcon: 'wallet-outline', labelKey: 'main.wallet' },
+  { name: 'Dashboard', activeIcon: 'person', inactiveIcon: 'person-outline', labelKey: 'main.profile' },
+];
+
+const TAB_COMPONENTS: Record<keyof MainTabParamList, React.ComponentType<any>> = {
+  RadarDashboard: RadarDashboardScreen,
+  TripHistory: TripHistoryScreen,
+  Earnings: EarningsScreen,
+  Dashboard: DashboardScreen,
 };
 
 function MainTabs() {
   const { t } = useTranslation();
-
-  const renderTabIcon =
-    (name: keyof MainTabParamList): BottomTabNavigationOptions['tabBarIcon'] =>
-    ({ focused, color, size }) => {
-      const iconName = focused ? TAB_ICONS[name].active : TAB_ICONS[name].inactive;
-      return <Ionicons name={iconName} size={size} color={color} />;
-    };
+  const insets = useSafeAreaInsets();
 
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#1b1b1b',
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-          paddingBottom: 24,
-          paddingTop: 12,
-          height: 80,
+          backgroundColor: colors.surfaceContainerLow + 'E6',
           borderTopWidth: 0,
+          elevation: 0,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -12 },
+          shadowOpacity: 0.15,
+          shadowRadius: 24,
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          paddingBottom: insets.bottom + 8,
+          paddingTop: 8,
+          height: 64 + insets.bottom,
+          borderTopLeftRadius: 32,
+          borderTopRightRadius: 32,
         },
+        tabBarBackground: () => null,
         tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.onSurfaceVariant,
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+        tabBarInactiveTintColor: colors.surfaceBright,
       }}
     >
-      <Tab.Screen
-        name="RadarDashboard"
-        component={RadarDashboardScreen}
-        options={{ title: t('main.home'), tabBarIcon: renderTabIcon('RadarDashboard') }}
-      />
-      <Tab.Screen
-        name="TripHistory"
-        component={TripHistoryScreen}
-        options={{ title: t('main.activity'), tabBarIcon: renderTabIcon('TripHistory') }}
-      />
-      <Tab.Screen
-        name="Earnings"
-        component={EarningsScreen}
-        options={{ title: t('main.wallet'), tabBarIcon: renderTabIcon('Earnings') }}
-      />
-      <Tab.Screen
-        name="Dashboard"
-        component={DashboardScreen}
-        options={{ title: t('main.profile'), tabBarIcon: renderTabIcon('Dashboard') }}
-      />
+      {TAB_CONFIG.map((tab) => (
+        <Tab.Screen
+          key={tab.name}
+          name={tab.name}
+          component={TAB_COMPONENTS[tab.name]}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View style={focused ? tabStyles.activeTab : tabStyles.inactiveTab}>
+                <Ionicons
+                  name={focused ? tab.activeIcon : tab.inactiveIcon}
+                  size={22}
+                  color={focused ? colors.onPrimary : colors.surfaceBright}
+                />
+                <Text style={focused ? tabStyles.activeLabel : tabStyles.inactiveLabel}>
+                  {t(tab.labelKey)}
+                </Text>
+              </View>
+            ),
+            tabBarLabel: () => null,
+          }}
+        />
+      ))}
     </Tab.Navigator>
   );
 }
+
+const tabStyles = StyleSheet.create({
+  activeTab: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    shadowColor: colors.onPrimaryContainer,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  inactiveTab: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  activeLabel: {
+    fontSize: 10,
+    fontWeight: '500',
+    color: colors.onPrimary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginTop: 2,
+  },
+  inactiveLabel: {
+    fontSize: 10,
+    fontWeight: '500',
+    color: colors.surfaceBright,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginTop: 2,
+  },
+});
 
 export default function RootNavigator() {
   const { isAuthenticated, driver } = useAuth();
@@ -123,6 +181,10 @@ export default function RootNavigator() {
               options={{ presentation: 'modal' }}
             />
             <Stack.Screen name="RideNavigation" component={RideNavigationScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="Help" component={HelpScreen} />
+            <Stack.Screen name="TermsOfService" component={TermsOfServiceScreen} />
+            <Stack.Screen name="Notifications" component={NotificationsScreen} />
           </Stack.Group>
         )}
       </Stack.Navigator>

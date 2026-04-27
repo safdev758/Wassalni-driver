@@ -8,6 +8,10 @@ export type RootStackParamList = {
   MainTabs: undefined;
   RideRequest: undefined;
   RideNavigation: undefined;
+  Settings: undefined;
+  Help: undefined;
+  TermsOfService: undefined;
+  Notifications: undefined;
 };
 
 export type MainTabParamList = {

@@ -77,13 +77,8 @@ export default function RideRequestScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <StatusBar barStyle="light-content" backgroundColor={colors.surface} />
       <View style={styles.container}>
-        {/* Background Map */}
-        <Image
-          source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDF1qOZj3o2y0JvTHkFNkPbkmDygHjyCy3ccUmptYIDGntv_7GROy0FWzlsK9MSbmSQKLiaaMkZ1kQdDEfocfLmrT-I2U5drbeW-FC7E1ZXZ8wBm-FssO-fs1EdF_T6mjPcPglimoOUVOs2F_E892oDiUoJsz5tWyPjY-Id0u2oAVknf4Dwekt7rZiNCbw_gXgV5lLftfRAvhsaH521lX83QGMflWhbBFK5ci-MUrCMoTuLmtrKfK9Fwh7O1iSmkdX-D0jGdTc_QLM' }}
-          style={styles.mapBackground}
-          resizeMode="cover"
-        />
-        <View style={styles.mapOverlay} />
+        {/* Background Map Placeholder */}
+        <View style={styles.mapBackground} />
 
         {/* Ride Request Modal */}
         <View style={styles.modal}>
@@ -156,20 +151,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-  },
-  mapOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: `${colors.surface}66`,
+    backgroundColor: '#1a1c1e',
   },
   modal: {
     position: 'absolute',
-    bottom: 32,
-    left: 16,
-    right: 16,
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: `${colors.surfaceContainerLow}E6`,
     borderRadius: 32,
     paddingVertical: spacing.xl,
@@ -216,7 +204,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   rideType: {
-    ...typography.headlineLarge,
+    ...typography.headlineMedium,
     color: colors.onSurface,
     fontWeight: '700',
     marginBottom: spacing.sm,
@@ -227,7 +215,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   rating: {
-    ...typography.headlineSmall,
+    ...typography.bodyLarge,
     color: colors.primary,
     fontWeight: '700',
   },
@@ -258,7 +246,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   metricValue: {
-    ...typography.headlineSmall,
+    ...typography.titleLarge,
     color: colors.onSurface,
     fontWeight: '700',
     marginBottom: spacing.sm,
@@ -296,7 +284,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   rejectText: {
-    ...typography.headlineSmall,
+    ...typography.titleMedium,
     color: colors.onSurface,
     fontWeight: '700',
   },
@@ -314,8 +302,10 @@ const styles = StyleSheet.create({
     elevation: 12,
   },
   acceptText: {
-    ...typography.headlineSmall,
+    ...typography.titleMedium,
     color: colors.surfaceContainerLowest,
     fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
 });

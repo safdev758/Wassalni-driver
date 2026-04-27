@@ -187,16 +187,10 @@ export default function PersonalDocumentsScreen() {
       <StatusBar barStyle="light-content" backgroundColor={colors.surface} />
       {/* TopAppBar */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.menuButton}>
-          <Ionicons name="menu" size={24} color={colors.primary} />
-        </TouchableOpacity>
         <Text style={styles.brand}>{t('appName')}</Text>
-        <TouchableOpacity style={styles.profileButton}>
-          <Image
-            source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBAtjEMugxEf4Qq5IDYmgF0k9OjDAbRqD5beythW6MtLUQHBW4-o3lJL1AkFyifZLyeAg9UzKUdqjWU4liGL4Y6cgalv_LekfwD9fUtakRIxPMRb649KdsgJrjFQZyDXsy6SMwVPkHi-jQ36JuY7dzVcQYq0N8I4PPW49K_GaEWaDRyf8vJoqST9u5lSYYRwWqmb4heuWvtwRnAf2dkHIg_moe071ICIFLfCaVGh5ByEeFKIIUXm0kP9GVa-Pf-RtO6DFfJuU3GLVX1' }}
-            style={styles.profileImage}
-          />
-        </TouchableOpacity>
+        <View style={styles.profileButton}>
+          <Ionicons name="person" size={20} color={colors.primary} />
+        </View>
       </View>
 
       <ScrollView 
@@ -412,17 +406,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     backgroundColor: colors.surface,
   },
-  menuButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  menuIcon: {
-    fontSize: 24,
-    color: colors.primary,
-  },
   brand: {
     ...typography.headlineSmall,
     color: colors.primary,
@@ -430,14 +413,12 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   profileButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-  profileImage: {
-    width: '100%',
-    height: '100%',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.surfaceContainerHigh,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   scrollContent: {
     paddingHorizontal: spacing.lg,
@@ -507,12 +488,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   stepNumber: {
-    ...typography.headlineSmall,
+    ...typography.titleSmall,
     color: colors.onSurface,
     fontWeight: '700',
   },
   stepNumberInactive: {
-    ...typography.headlineSmall,
+    ...typography.titleSmall,
     color: colors.onSurfaceVariant,
     fontWeight: '700',
   },
@@ -548,9 +529,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   cardTitle: {
-    ...typography.headlineSmall,
+    ...typography.titleLarge,
     color: colors.onSurface,
-    marginBottom: spacing.lg,
+    fontWeight: '700',
+    marginBottom: spacing.md,
   },
   cardDescription: {
     ...typography.bodyMedium,
@@ -622,8 +604,9 @@ const styles = StyleSheet.create({
   },
   uploadedImage: {
     width: '100%',
-    height: '100%',
+    height: 120,
     borderRadius: 6,
+    resizeMode: 'cover',
   },
   livenessHeader: {
     flexDirection: 'row',
@@ -660,6 +643,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 120,
     borderRadius: 8,
+    resizeMode: 'cover',
   },
   bottomAction: {
     position: 'absolute',
@@ -667,7 +651,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: `${colors.surface}F2`,
-    padding: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xl,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -710,7 +696,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   continueText: {
-    ...typography.headlineSmall,
+    ...typography.labelLarge,
     color: colors.primaryContainer,
     fontWeight: '700',
   },

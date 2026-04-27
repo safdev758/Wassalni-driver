@@ -61,6 +61,9 @@ export const colors = {
   onBackground: '#e2e2e2',
   onSurface: '#e2e2e2',
   surfaceTint: '#b7c4ff',
+  
+  // Shadow
+  shadow: '#000000',
 } as const;
 
 export type Colors = typeof colors;

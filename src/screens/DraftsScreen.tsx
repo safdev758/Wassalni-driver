@@ -20,16 +20,10 @@ export default function DraftsScreen() {
       <View style={styles.container}>
         {/* TopAppBar */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.menuButton}>
-            <Ionicons name="menu" size={24} color={colors.onSurface} />
-          </TouchableOpacity>
           <Text style={styles.brand}>{t('appName')}</Text>
-          <TouchableOpacity style={styles.profileButton}>
-            <Image
-              source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBAtjEMugxEf4Qq5IDYmgF0k9OjDAbRqD5beythW6MtLUQHBW4-o3lJL1AkFyifZLyeAg9UzKUdqjWU4liGL4Y6cgalv_LekfwD9fUtakRIxPMRb649KdsgJrjFQZyDXsy6SMwVPkHi-jQ36JuY7dzVcQYq0N8I4PPW49K_GaEWaDRyf8vJoqST9u5lSYYRwWqmb4heuWvtwRnAf2dkHIg_moe071ICIFLfCaVGh5ByEeFKIIUXm0kP9GVa-Pf-RtO6DFfJuU3GLVX1' }}
-              style={styles.profileImage}
-            />
-          </TouchableOpacity>
+          <View style={styles.profileButton}>
+            <Ionicons name="person" size={20} color={colors.primary} />
+          </View>
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -102,13 +96,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
     backgroundColor: `${colors.surface}B3`,
   },
-  menuButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   brand: {
     ...typography.headlineSmall,
     color: colors.primary,
@@ -119,11 +106,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-  },
-  profileImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    backgroundColor: colors.surfaceContainerHigh,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   scrollContent: {
     paddingHorizontal: spacing.lg,
@@ -169,7 +154,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   draftTitle: {
-    ...typography.headlineSmall,
+    ...typography.titleMedium,
     color: colors.onSurface,
     fontWeight: '600',
   },
@@ -212,7 +197,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   emptyTitle: {
-    ...typography.headlineSmall,
+    ...typography.titleLarge,
     color: colors.onSurface,
     fontWeight: '600',
     marginBottom: spacing.sm,
@@ -239,7 +224,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   continueText: {
-    ...typography.headlineSmall,
+    ...typography.labelLarge,
     color: colors.surfaceContainerLowest,
     fontWeight: '700',
   },

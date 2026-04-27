@@ -412,8 +412,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   sectionTitle: {
-    ...typography.headlineSmall,
+    ...typography.titleLarge,
     color: colors.onSurface,
+    fontWeight: '700',
     marginBottom: spacing.sm,
   },
   sectionDescription: {
@@ -475,6 +476,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 100,
     borderRadius: 8,
+    resizeMode: 'cover',
   },
   continueButton: {
     flexDirection: 'row',
@@ -503,7 +505,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
   },
   verifyCardTitle: {
-    ...typography.headlineSmall,
+    ...typography.titleLarge,
     color: colors.onSurface,
     fontWeight: '700',
     marginBottom: spacing.sm,
