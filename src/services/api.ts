@@ -121,11 +121,11 @@ export const rideAPI = {
   get: (rideId: string) => get(`/rides/${rideId}`),
 
   rate: (rideId: string, data: {
-    stars: number; compliments?: string[]; tip_amount?: number; note?: string;
+    rating: number; compliments?: string[]; tip_amount?: number; note?: string;
   }) => post(`/rides/${rideId}/rate`, data),
 
-  sendMessage: (rideId: string, content: string) =>
-    post(`/rides/${rideId}/messages`, { content }),
+  sendMessage: (rideId: string, message: string) =>
+    post(`/rides/${rideId}/messages`, { message }),
 
   getMessages: (rideId: string) => get(`/rides/${rideId}/messages`),
 };
