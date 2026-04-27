@@ -75,7 +75,7 @@ export const driverAPI = {
   getProfile: () => get('/driver/profile'),
 
   updateStatus: (isOnline: boolean, lat?: number, lng?: number) =>
-    put('/driver/status', { is_online: isOnline, latitude: lat, longitude: lng }),
+    put('/driver/status', { is_online: isOnline, location: lat != null && lng != null ? { latitude: lat, longitude: lng } : undefined }),
 
   onboardPersonal: (data: { name: string; email: string }) =>
     post('/driver/onboarding/personal-info', data),
@@ -108,26 +108,26 @@ export const documentAPI = {
 
 // --- Rides ---
 export const rideAPI = {
-  accept: (rideId: string) => post(`/rides/${rideId}/accept`),
+  accept: (rideId: string) => post(`/driver/rides/${rideId}/accept`),
 
   counterOffer: (rideId: string, offeredPrice: number) =>
-    post(`/rides/${rideId}/counter`, { offered_price: offeredPrice }),
+    post(`/driver/rides/${rideId}/counter`, { offered_price: offeredPrice }),
 
-  complete: (rideId: string) => post(`/rides/${rideId}/complete`),
+  complete: (rideId: string) => post(`/driver/rides/${rideId}/complete`),
 
   cancel: (rideId: string, reason?: string) =>
-    del(`/rides/${rideId}`, reason ? { reason } : undefined),
+    del(`/driver/rides/${rideId}`, reason ? { reason } : undefined),
 
-  get: (rideId: string) => get(`/rides/${rideId}`),
+  get: (rideId: string) => get(`/driver/rides/${rideId}`),
 
   rate: (rideId: string, data: {
     rating: number; compliments?: string[]; tip_amount?: number; note?: string;
-  }) => post(`/rides/${rideId}/rate`, data),
+  }) => post(`/driver/rides/${rideId}/rate`, data),
 
   sendMessage: (rideId: string, message: string) =>
-    post(`/rides/${rideId}/messages`, { message }),
+    post(`/driver/rides/${rideId}/messages`, { message }),
 
-  getMessages: (rideId: string) => get(`/rides/${rideId}/messages`),
+  getMessages: (rideId: string) => get(`/driver/rides/${rideId}/messages`),
 };
 
 // --- Reports ---
