@@ -15,19 +15,24 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'RideNavigat
 export default function RideNavigationScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { t } = useTranslation();
-  const { driverState, completeRide, updateEarnings } = useDriver();
+  const { driverState, completeRide, cancelRide, updateEarnings } = useDriver();
   const ride = driverState.currentRide;
 
-  const handleComplete = () => {
-    if (ride) {
-      updateEarnings(ride.estimatedFare);
+  const handleComplete = async () => {
+    try {
+      await completeRide();
+      if (ride) {
+        updateEarnings(ride.estimatedFare);
+      }
+      Alert.alert(
+        t('rideNavigation.rideCompleted'),
+        t('rideNavigation.rideCompletedDescription'),
+        [{ text: t('common.done'), onPress: () => navigation.navigate('MainTabs') }],
+      );
+    } catch (error) {
+      console.error('Failed to complete ride:', error);
+      Alert.alert(t('common.error'), t('rideNavigation.completeError') || 'Failed to complete ride. Please try again.');
     }
-    completeRide();
-    Alert.alert(
-      t('rideNavigation.rideCompleted'),
-      t('rideNavigation.rideCompletedDescription'),
-      [{ text: t('common.done'), onPress: () => navigation.navigate('MainTabs') }],
-    );
   };
 
   const handleCancel = () => {
@@ -39,9 +44,13 @@ export default function RideNavigationScreen() {
         {
           text: t('common.confirm'),
           style: 'destructive',
-          onPress: () => {
-            completeRide();
-            navigation.navigate('MainTabs');
+          onPress: async () => {
+            try {
+              await cancelRide();
+              navigation.navigate('MainTabs');
+            } catch (error) {
+              console.error('Failed to cancel ride:', error);
+            }
           },
         },
       ],

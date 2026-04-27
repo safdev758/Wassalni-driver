@@ -3,6 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../theme';
+import { authAPI, driverAPI, setAccessToken, connectWebSocket, disconnectWebSocket } from '../services/api';
 
 interface Driver {
   id: string;
@@ -11,6 +12,8 @@ interface Driver {
   email?: string;
   isVerified: boolean;
   isOnboarded: boolean;
+  rating?: number;
+  status?: string;
 }
 
 interface AuthContextType {
@@ -62,10 +65,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loadAuthData = async () => {
     try {
       const token = await getStorageItem(AUTH_TOKEN_KEY);
-      const driverData = await getStorageItem(DRIVER_DATA_KEY);
-
-      if (token && driverData) {
-        setDriver(JSON.parse(driverData));
+      if (token) {
+        setAccessToken(token);
+        try {
+          const profile = await driverAPI.getProfile();
+          const d: Driver = {
+            id: profile.id,
+            phone: profile.phone,
+            name: profile.name || '',
+            email: profile.email,
+            isVerified: profile.is_verified ?? false,
+            isOnboarded: profile.is_onboarded ?? false,
+            rating: profile.rating,
+            status: profile.status,
+          };
+          setDriver(d);
+          await setStorageItem(DRIVER_DATA_KEY, JSON.stringify(d));
+          connectWebSocket();
+        } catch {
+          const driverData = await getStorageItem(DRIVER_DATA_KEY);
+          if (driverData) {
+            setDriver(JSON.parse(driverData));
+            connectWebSocket();
+          }
+        }
       }
     } catch (error) {
       console.error('Error loading auth data:', error);
@@ -80,47 +103,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = async (phone: string) => {
-    // API call to send OTP
-    // For now, simulate
-    console.log('Sending OTP to:', phone);
+    await authAPI.sendOTP(phone);
   };
 
-  const verifyOTP = async (phone: string, _code: string) => {
-    // API call to verify OTP
-    // For now, simulate
-    const mockDriver: Driver = {
-      id: 'drv_001',
-      phone,
-      name: '',
-      isVerified: true,
-      isOnboarded: false,
+  const verifyOTP = async (phone: string, code: string) => {
+    const response = await authAPI.verifyOTP(phone, code);
+    const token = response.access_token;
+    setAccessToken(token);
+    await setStorageItem(AUTH_TOKEN_KEY, token);
+
+    const d = response.driver;
+    const driverData: Driver = {
+      id: d.id,
+      phone: d.phone,
+      name: d.name || '',
+      email: d.email,
+      isVerified: d.is_verified || false,
+      isOnboarded: d.is_onboarded || false,
+      rating: d.rating,
+      status: d.status,
     };
 
-    await setStorageItem(AUTH_TOKEN_KEY, 'mock_token');
-    await persistDriver(mockDriver);
+    await persistDriver(driverData);
+    connectWebSocket();
   };
 
   const completeOnboarding = async () => {
-    if (!driver) {
-      return;
-    }
+    if (!driver) return;
     await persistDriver({ ...driver, isOnboarded: true });
   };
 
   const updateDriver = async (updates: Partial<Driver>) => {
-    if (!driver) {
-      return;
-    }
+    if (!driver) return;
     await persistDriver({ ...driver, ...updates });
   };
 
   const logout = async () => {
+    disconnectWebSocket();
+    setAccessToken(null);
     await deleteStorageItem(AUTH_TOKEN_KEY);
     await deleteStorageItem(DRIVER_DATA_KEY);
     setDriver(null);
   };
 
   const clearAuthData = async () => {
+    disconnectWebSocket();
+    setAccessToken(null);
     await deleteStorageItem(AUTH_TOKEN_KEY);
     await deleteStorageItem(DRIVER_DATA_KEY);
     setDriver(null);

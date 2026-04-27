@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { colors, typography, spacing } from '../../theme';
 import type { RootStackParamList } from '../../types/navigation';
+import { documentAPI } from '../../services/api';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'PersonalDocuments'>;
 
@@ -25,6 +26,7 @@ export default function PersonalDocumentsScreen() {
 
   const [isVerifying, setIsVerifying] = useState(false);
   const [validationResult, setValidationResult] = useState<string | null>(null);
+  const [validationStatus, setValidationStatus] = useState<'success' | 'warning' | 'error' | null>(null);
 
   const handleContinue = () => {
     // Allow navigation even without images - upload is optional for testing
@@ -49,17 +51,31 @@ export default function PersonalDocumentsScreen() {
   const validateAlgerianDocument = async (imageUri: string, type: 'front' | 'back' | 'selfie') => {
     setIsVerifying(true);
     setValidationResult(null);
-    
-    // Simulate AI/OCR validation for Algerian documents
-    setTimeout(() => {
+
+    const docTypeMap: Record<string, string> = {
+      front: 'drivers_license_front',
+      back: 'drivers_license_back',
+      selfie: 'selfie',
+    };
+
+    try {
+      const result = await documentAPI.uploadAndVerify(docTypeMap[type], imageUri);
       setIsVerifying(false);
-      const isValid = Math.random() > 0.2; // 80% success rate for testing
-      if (isValid) {
-        setValidationResult(`${type === 'selfie' ? 'Liveness check' : 'Algerian Document'} validated successfully`);
+      if (result.status === 'approved') {
+        setValidationStatus('success');
+        setValidationResult(`Document verified (${(result.confidence * 100).toFixed(0)}% confidence)`);
+      } else if (result.status === 'needs_review') {
+        setValidationStatus('warning');
+        setValidationResult(`Document submitted for review (${(result.confidence * 100).toFixed(0)}% confidence)`);
       } else {
-        setValidationResult('Verification failed. Please retake photo with better lighting.');
+        setValidationStatus('error');
+        setValidationResult(result.rejection_reason || 'Verification failed. Please retake photo with better lighting.');
       }
-    }, 1500);
+    } catch (error) {
+      setIsVerifying(false);
+      setValidationStatus('error');
+      setValidationResult('Upload failed. Please try again.');
+    }
   };
 
   const handleSaveDraft = () => {
@@ -172,12 +188,13 @@ export default function PersonalDocumentsScreen() {
       return;
     }
 
-    // Simulate AI/OCR validation
     Alert.alert(
       'AI/OCR Verification',
       `Validating ${images.length} document(s) using Algerian ID recognition...`,
-      [{ text: 'OK', onPress: () => {
-        images.forEach(img => validateAlgerianDocument(img.uri!, img.type));
+      [{ text: 'OK', onPress: async () => {
+        for (const img of images) {
+          await validateAlgerianDocument(img.uri!, img.type);
+        }
       }}]
     );
   };
@@ -354,11 +371,11 @@ export default function PersonalDocumentsScreen() {
             {validationResult && (
               <View style={styles.validationResult}>
                 <Ionicons 
-                  name={validationResult.includes('success') ? 'checkmark-circle' : 'warning'} 
+                  name={validationStatus === 'success' ? 'checkmark-circle' : validationStatus === 'warning' ? 'alert-circle' : 'warning'} 
                   size={20} 
-                  color={validationResult.includes('success') ? colors.secondary : colors.error} 
+                  color={validationStatus === 'success' ? colors.secondary : validationStatus === 'warning' ? colors.onSurfaceVariant : colors.error} 
                 />
-                <Text style={[styles.validationText, validationResult.includes('success') ? styles.validationSuccess : styles.validationError]}>
+                <Text style={[styles.validationText, validationStatus === 'error' ? styles.validationError : styles.validationSuccess]}>
                   {validationResult}
                 </Text>
               </View>

@@ -12,39 +12,19 @@ import type { RootStackParamList } from '../../types/navigation';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'RideRequest'>;
 
-// Placeholder ride shown until a real ride request arrives from the backend.
-const SAMPLE_RIDE = {
-  id: 'ride_001',
-  type: 'Economy',
-  pickup: {
-    address: 'Place des Martyrs, Alger-Centre',
-    latitude: 36.7878,
-    longitude: 3.0603,
-  },
-  dropoff: {
-    address: 'Aéroport Houari Boumediene',
-    latitude: 36.6910,
-    longitude: 3.2155,
-  },
-  estimatedFare: 1850,
-  distanceKm: 18.4,
-  distance: '18.4 km',
-  duration: '32 min',
-  rider: {
-    name: 'Yacine B.',
-    rating: 4.92,
-  },
-};
 
-const PICKUP_MINUTES_AWAY = 4;
 
 export default function RideRequestScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { t } = useTranslation();
-  const { acceptRide, rejectRide } = useDriver();
+  const { acceptRide, rejectRide, driverState } = useDriver();
   const [countdown, setCountdown] = useState(12);
 
+  const ride = driverState.pendingRide;
+
   useEffect(() => {
+    if (!ride) return;
+    setCountdown(12);
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -58,11 +38,20 @@ export default function RideRequestScreen() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [navigation, rejectRide]);
+  }, [ride, navigation, rejectRide]);
 
-  const handleAccept = () => {
-    acceptRide(SAMPLE_RIDE);
-    navigation.navigate('RideNavigation');
+  if (!ride) {
+    return null;
+  }
+
+  const handleAccept = async () => {
+    try {
+      await acceptRide(ride);
+      navigation.navigate('RideNavigation');
+    } catch (error) {
+      console.error('Failed to accept ride:', error);
+      navigation.goBack();
+    }
   };
 
   const handleReject = () => {
@@ -70,8 +59,8 @@ export default function RideRequestScreen() {
     navigation.goBack();
   };
 
-  const fareLabel = formatCurrency(SAMPLE_RIDE.estimatedFare, 0);
-  const distanceLabel = formatDistanceKm(SAMPLE_RIDE.distanceKm);
+  const fareLabel = formatCurrency(ride.estimatedFare, 0);
+  const distanceLabel = ride.distance;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -97,7 +86,7 @@ export default function RideRequestScreen() {
             <Text style={styles.rideType}>{t('rideRequest.blackSUV')}</Text>
             <View style={styles.riderInfo}>
               <Ionicons name="star" size={18} color={colors.secondary} />
-              <Text style={styles.rating}>{SAMPLE_RIDE.rider.rating.toFixed(2)}</Text>
+              <Text style={styles.rating}>{ride.rider.rating.toFixed(2)}</Text>
               <Text style={styles.separator}>•</Text>
               <Text style={styles.riderType}>{t('rideRequest.premiumRider')}</Text>
             </View>
@@ -107,8 +96,8 @@ export default function RideRequestScreen() {
           <View style={styles.metricsGrid}>
             <View style={styles.metricCard}>
               <Text style={styles.metricLabel}>{t('rideRequest.pickup')}</Text>
-              <Text style={styles.metricValue}>{PICKUP_MINUTES_AWAY} {t('rideRequest.minsAway')}</Text>
-              <Text style={styles.metricAddress}>{SAMPLE_RIDE.pickup.address}</Text>
+              <Text style={styles.metricValue}>{t('rideRequest.minsAway')}</Text>
+              <Text style={styles.metricAddress}>{ride.pickup.address}</Text>
             </View>
 
             <View style={styles.metricCard}>
