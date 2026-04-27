@@ -84,7 +84,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           connectWebSocket();
         } catch {
           const driverData = await getStorageItem(DRIVER_DATA_KEY);
-          if (driverData) setDriver(JSON.parse(driverData));
+          if (driverData) {
+            setDriver(JSON.parse(driverData));
+            connectWebSocket();
+          }
         }
       }
     } catch (error) {
