@@ -188,12 +188,13 @@ export default function PersonalDocumentsScreen() {
       return;
     }
 
-    // Simulate AI/OCR validation
     Alert.alert(
       'AI/OCR Verification',
       `Validating ${images.length} document(s) using Algerian ID recognition...`,
-      [{ text: 'OK', onPress: () => {
-        images.forEach(img => validateAlgerianDocument(img.uri!, img.type));
+      [{ text: 'OK', onPress: async () => {
+        for (const img of images) {
+          await validateAlgerianDocument(img.uri!, img.type);
+        }
       }}]
     );
   };

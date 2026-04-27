@@ -132,9 +132,9 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
-  const rejectRide = () => {
+  const rejectRide = useCallback(() => {
     setDriverState(prev => ({ ...prev, pendingRide: null }));
-  };
+  }, []);
 
   const completeRide = async () => {
     const currentRide = driverState.currentRide;
@@ -157,12 +157,12 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
-  const updateEarnings = (amount: number) => {
+  const updateEarnings = useCallback((amount: number) => {
     setDriverState(prev => ({
       ...prev,
       todayEarnings: prev.todayEarnings + amount,
     }));
-  };
+  }, []);
 
   const sendCounterOffer = async (rideId: string, price: number) => {
     await rideAPI.counterOffer(rideId, price);
