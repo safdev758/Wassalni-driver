@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -16,7 +16,11 @@ export default function DashboardScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { driverState, setOnline } = useDriver();
+  const { driverState, setOnline, fetchEarnings } = useDriver();
+
+  useEffect(() => {
+    fetchEarnings();
+  }, []);
 
   const handleGoOnline = () => {
     setOnline(!driverState.isOnline);
@@ -68,7 +72,7 @@ export default function DashboardScreen() {
             </View>
             <Text style={styles.earningsAmount}>{formatCurrency(driverState.todayEarnings)}</Text>
             <Text style={styles.earningsChange}>
-              <Ionicons name="trending-up" size={14} color={colors.secondary} /> +12% {t('main.vsYesterday')}
+              <Ionicons name="trending-up" size={14} color={colors.secondary} /> {t('main.vsYesterday')}
             </Text>
           </View>
 

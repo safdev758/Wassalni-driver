@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, StatusBar, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -8,30 +8,53 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, spacing } from '../../theme';
 import { formatCurrency } from '../../utils/format';
+import { driverAPI } from '../../services/api';
 
 const TAB_BAR_HEIGHT = 64;
 
-const MOCK_BALANCE = 4250;
-const MOCK_PAYMENT_METHODS = [
-  { id: '1', type: 'card', name: 'CIB Card', last4: '4921', isDefault: true },
-  { id: '2', type: 'wallet', name: 'Cash', last4: '', isDefault: false },
-];
-const MOCK_TRANSACTIONS: Array<{
+type Transaction = {
   id: string;
   type: 'credit' | 'debit';
   description: string;
   date: string;
   amount: number;
-}> = [
-  { id: '1', type: 'credit', description: 'Airport run', date: 'Today, 2:45 PM', amount: 1400 },
-  { id: '2', type: 'credit', description: 'Downtown pickup', date: 'Today, 11:30 AM', amount: 850 },
-  { id: '3', type: 'debit', description: 'Weekly Payout', date: 'Yesterday', amount: -2450 },
-];
+};
+
+type PaymentMethod = {
+  id: string;
+  type: string;
+  name: string;
+  last4: string;
+  isDefault: boolean;
+};
 
 export default function EarningsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const [balance, setBalance] = useState(0);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [paymentMethods] = useState<PaymentMethod[]>([
+    { id: '1', type: 'wallet', name: 'Cash', last4: '', isDefault: true },
+  ]);
+
+  useEffect(() => {
+    driverAPI.getEarningsToday().then((data) => {
+      setBalance(data.total_earnings || 0);
+    }).catch(() => {});
+
+    driverAPI.getTransactions().then((data) => {
+      if (data?.transactions) {
+        setTransactions(data.transactions.map((tx: Record<string, unknown>) => ({
+          id: tx.ride_id as string,
+          type: 'credit' as const,
+          description: `${tx.pickup_address || 'Ride'} → ${tx.dropoff_address || ''}`,
+          date: tx.completed_at as string || '',
+          amount: tx.final_price as number || 0,
+        })));
+      }
+    }).catch(() => {});
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -59,7 +82,7 @@ export default function EarningsScreen() {
             <View style={styles.balanceGradient} />
             <View style={styles.balanceContent}>
               <Text style={styles.balanceLabel}>{t('earnings.balance')}</Text>
-              <Text style={styles.balanceAmount}>{formatCurrency(MOCK_BALANCE)}</Text>
+              <Text style={styles.balanceAmount}>{formatCurrency(balance)}</Text>
               <View style={styles.balanceActions}>
                 <TouchableOpacity
                   style={styles.cashOutButton}
@@ -85,28 +108,28 @@ export default function EarningsScreen() {
                 <Ionicons name="time" size={18} color={colors.onSurfaceVariant} />
               </View>
               <Text style={styles.earningsCardLabel}>{t('earnings.tripEarnings')}</Text>
-              <Text style={styles.earningsCardValue}>{formatCurrency(890)}</Text>
+              <Text style={styles.earningsCardValue}>{formatCurrency(balance)}</Text>
             </View>
             <View style={styles.earningsCard}>
               <View style={[styles.earningsIconWrap, { backgroundColor: colors.primary + '1A' }]}>
                 <Ionicons name="cash" size={18} color={colors.primary} />
               </View>
               <Text style={styles.earningsCardLabel}>{t('earnings.tips')}</Text>
-              <Text style={styles.earningsCardValue}>{formatCurrency(235.50)}</Text>
+              <Text style={styles.earningsCardValue}>{formatCurrency(0)}</Text>
             </View>
             <View style={styles.earningsCard}>
               <View style={styles.earningsIconWrap}>
                 <Ionicons name="gift" size={18} color={colors.onSurfaceVariant} />
               </View>
               <Text style={styles.earningsCardLabel}>{t('earnings.bonuses')}</Text>
-              <Text style={styles.earningsCardValue}>{formatCurrency(123)}</Text>
+              <Text style={styles.earningsCardValue}>{formatCurrency(0)}</Text>
             </View>
           </View>
 
           {/* Payment Methods */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('earnings.paymentMethods')}</Text>
-            {MOCK_PAYMENT_METHODS.map((method) => (
+            {paymentMethods.map((method) => (
               <TouchableOpacity
                 key={method.id}
                 style={[styles.paymentCard, method.isDefault && styles.paymentCardDefault]}
@@ -144,7 +167,7 @@ export default function EarningsScreen() {
           {/* Recent Activity */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('earnings.recentActivity')}</Text>
-            {MOCK_TRANSACTIONS.map((tx) => (
+            {transactions.map((tx) => (
               <View key={tx.id} style={styles.transactionItem}>
                 <View style={[
                   styles.transactionIcon,

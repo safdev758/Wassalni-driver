@@ -1,12 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
-
-interface DriverState {
-  isOnline: boolean;
-  currentRide: Ride | null;
-  todayEarnings: number;
-  todayTrips: number;
-  rating: number;
-}
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { driverAPI, rideAPI, addWSHandler, removeWSHandler, type WSMessage } from '../services/api';
 
 interface Ride {
   id: string;
@@ -25,9 +18,19 @@ interface Ride {
   distance: string;
   duration: string;
   rider: {
+    id: string;
     name: string;
     rating: number;
   };
+}
+
+interface DriverState {
+  isOnline: boolean;
+  currentRide: Ride | null;
+  pendingRide: Ride | null;
+  todayEarnings: number;
+  todayTrips: number;
+  rating: number;
 }
 
 interface DriverContextType {
@@ -37,6 +40,8 @@ interface DriverContextType {
   rejectRide: () => void;
   completeRide: () => void;
   updateEarnings: (amount: number) => void;
+  sendCounterOffer: (rideId: string, price: number) => Promise<void>;
+  fetchEarnings: () => Promise<void>;
 }
 
 const DriverContext = createContext<DriverContextType | undefined>(undefined);
@@ -44,6 +49,7 @@ const DriverContext = createContext<DriverContextType | undefined>(undefined);
 const initialState: DriverState = {
   isOnline: false,
   currentRide: null,
+  pendingRide: null,
   todayEarnings: 0,
   todayTrips: 0,
   rating: 0,
@@ -52,23 +58,102 @@ const initialState: DriverState = {
 export function DriverProvider({ children }: { children: React.ReactNode }) {
   const [driverState, setDriverState] = useState<DriverState>(initialState);
 
-  const setOnline = (isOnline: boolean) => {
-    setDriverState(prev => ({ ...prev, isOnline }));
+  const handleWSMessage = useCallback((msg: WSMessage) => {
+    const payload = msg.payload as Record<string, unknown>;
+
+    switch (msg.type) {
+      case 'ride_request': {
+        const pickup = payload.pickup as Record<string, unknown>;
+        const dropoff = payload.dropoff as Record<string, unknown>;
+        const rider = payload.rider as Record<string, unknown>;
+        const ride: Ride = {
+          id: payload.ride_id as string,
+          type: payload.vehicle_type as string,
+          pickup: {
+            address: pickup.address as string,
+            latitude: pickup.lat as number,
+            longitude: pickup.lng as number,
+          },
+          dropoff: {
+            address: dropoff.address as string,
+            latitude: dropoff.lat as number,
+            longitude: dropoff.lng as number,
+          },
+          estimatedFare: payload.rider_price as number,
+          distance: `${(payload.distance_km as number || 0).toFixed(1)} km`,
+          duration: `${payload.duration_minutes as number || 0} min`,
+          rider: {
+            id: rider.id as string,
+            name: rider.name as string,
+            rating: rider.rating as number,
+          },
+        };
+        setDriverState(prev => ({ ...prev, pendingRide: ride }));
+        break;
+      }
+      case 'ride_cancelled':
+        setDriverState(prev => ({
+          ...prev,
+          currentRide: null,
+          pendingRide: null,
+        }));
+        break;
+      case 'offer_accepted':
+        setDriverState(prev => ({
+          ...prev,
+          currentRide: prev.pendingRide || prev.currentRide,
+          pendingRide: null,
+        }));
+        break;
+    }
+  }, []);
+
+  useEffect(() => {
+    addWSHandler(handleWSMessage);
+    return () => removeWSHandler(handleWSMessage);
+  }, [handleWSMessage]);
+
+  const setOnline = async (isOnline: boolean) => {
+    try {
+      await driverAPI.updateStatus(isOnline);
+      setDriverState(prev => ({ ...prev, isOnline }));
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      setDriverState(prev => ({ ...prev, isOnline }));
+    }
   };
 
-  const acceptRide = (ride: Ride) => {
-    setDriverState(prev => ({ ...prev, currentRide: ride }));
+  const acceptRide = async (ride: Ride) => {
+    try {
+      await rideAPI.accept(ride.id);
+      setDriverState(prev => ({
+        ...prev,
+        currentRide: ride,
+        pendingRide: null,
+      }));
+    } catch (error) {
+      console.error('Failed to accept ride:', error);
+    }
   };
 
   const rejectRide = () => {
-    setDriverState(prev => ({ ...prev, currentRide: null }));
+    setDriverState(prev => ({ ...prev, pendingRide: null }));
   };
 
-  const completeRide = () => {
+  const completeRide = async () => {
+    const currentRide = driverState.currentRide;
+    if (currentRide) {
+      try {
+        await rideAPI.complete(currentRide.id);
+      } catch (error) {
+        console.error('Failed to complete ride:', error);
+      }
+    }
     setDriverState(prev => ({
       ...prev,
       currentRide: null,
       todayTrips: prev.todayTrips + 1,
+      todayEarnings: prev.todayEarnings + (currentRide?.estimatedFare || 0),
     }));
   };
 
@@ -77,6 +162,23 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
       ...prev,
       todayEarnings: prev.todayEarnings + amount,
     }));
+  };
+
+  const sendCounterOffer = async (rideId: string, price: number) => {
+    await rideAPI.counterOffer(rideId, price);
+  };
+
+  const fetchEarnings = async () => {
+    try {
+      const data = await driverAPI.getEarningsToday();
+      setDriverState(prev => ({
+        ...prev,
+        todayEarnings: data.total_earnings || 0,
+        todayTrips: data.total_trips || 0,
+      }));
+    } catch (error) {
+      console.error('Failed to fetch earnings:', error);
+    }
   };
 
   return (
@@ -88,6 +190,8 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
         rejectRide,
         completeRide,
         updateEarnings,
+        sendCounterOffer,
+        fetchEarnings,
       }}
     >
       {children}

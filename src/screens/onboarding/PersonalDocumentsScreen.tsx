@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { colors, typography, spacing } from '../../theme';
 import type { RootStackParamList } from '../../types/navigation';
+import { documentAPI } from '../../services/api';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'PersonalDocuments'>;
 
@@ -49,17 +50,27 @@ export default function PersonalDocumentsScreen() {
   const validateAlgerianDocument = async (imageUri: string, type: 'front' | 'back' | 'selfie') => {
     setIsVerifying(true);
     setValidationResult(null);
-    
-    // Simulate AI/OCR validation for Algerian documents
-    setTimeout(() => {
+
+    const docTypeMap: Record<string, string> = {
+      front: 'drivers_license_front',
+      back: 'drivers_license_back',
+      selfie: 'selfie',
+    };
+
+    try {
+      const result = await documentAPI.uploadAndVerify(docTypeMap[type], imageUri);
       setIsVerifying(false);
-      const isValid = Math.random() > 0.2; // 80% success rate for testing
-      if (isValid) {
-        setValidationResult(`${type === 'selfie' ? 'Liveness check' : 'Algerian Document'} validated successfully`);
+      if (result.status === 'approved') {
+        setValidationResult(`Document verified (${(result.confidence * 100).toFixed(0)}% confidence)`);
+      } else if (result.status === 'needs_review') {
+        setValidationResult(`Document submitted for review (${(result.confidence * 100).toFixed(0)}% confidence)`);
       } else {
-        setValidationResult('Verification failed. Please retake photo with better lighting.');
+        setValidationResult(result.rejection_reason || 'Verification failed. Please retake photo with better lighting.');
       }
-    }, 1500);
+    } catch (error) {
+      setIsVerifying(false);
+      setValidationResult('Upload failed. Please try again.');
+    }
   };
 
   const handleSaveDraft = () => {
