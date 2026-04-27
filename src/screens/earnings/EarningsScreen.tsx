@@ -40,7 +40,7 @@ export default function EarningsScreen() {
 
   useEffect(() => {
     driverAPI.getEarningsToday().then((data) => {
-      setBalance(data.total_earnings || 0);
+      setBalance(data.today_earnings || 0);
     }).catch(() => {});
 
     driverAPI.getTransactions().then((data) => {

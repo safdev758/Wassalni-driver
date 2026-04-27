@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../theme';
-import { authAPI, driverAPI, setAccessToken, loadStoredToken, connectWebSocket, disconnectWebSocket } from '../services/api';
+import { authAPI, driverAPI, setAccessToken, connectWebSocket, disconnectWebSocket } from '../services/api';
 
 interface Driver {
   id: string;

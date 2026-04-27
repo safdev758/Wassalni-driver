@@ -68,22 +68,22 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
         const rider = payload.rider as Record<string, unknown>;
         const ride: Ride = {
           id: payload.ride_id as string,
-          type: payload.vehicle_type as string,
+          type: payload.type as string,
           pickup: {
             address: pickup.address as string,
-            latitude: pickup.lat as number,
-            longitude: pickup.lng as number,
+            latitude: pickup.latitude as number,
+            longitude: pickup.longitude as number,
           },
           dropoff: {
             address: dropoff.address as string,
-            latitude: dropoff.lat as number,
-            longitude: dropoff.lng as number,
+            latitude: dropoff.latitude as number,
+            longitude: dropoff.longitude as number,
           },
-          estimatedFare: payload.rider_price as number,
-          distance: `${(payload.distance_km as number || 0).toFixed(1)} km`,
-          duration: `${payload.duration_minutes as number || 0} min`,
+          estimatedFare: payload.estimated_fare as number,
+          distance: payload.distance as string || '',
+          duration: payload.duration as string || '',
           rider: {
-            id: rider.id as string,
+            id: '',
             name: rider.name as string,
             rating: rider.rating as number,
           },
@@ -141,19 +141,17 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
 
   const completeRide = async () => {
     const currentRide = driverState.currentRide;
-    if (currentRide) {
-      try {
-        await rideAPI.complete(currentRide.id);
-      } catch (error) {
-        console.error('Failed to complete ride:', error);
-      }
+    if (!currentRide) return;
+    try {
+      await rideAPI.complete(currentRide.id);
+      setDriverState(prev => ({
+        ...prev,
+        currentRide: null,
+        todayTrips: prev.todayTrips + 1,
+      }));
+    } catch (error) {
+      console.error('Failed to complete ride:', error);
     }
-    setDriverState(prev => ({
-      ...prev,
-      currentRide: null,
-      todayTrips: prev.todayTrips + 1,
-      todayEarnings: prev.todayEarnings + (currentRide?.estimatedFare || 0),
-    }));
   };
 
   const updateEarnings = (amount: number) => {
@@ -172,8 +170,8 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
       const data = await driverAPI.getEarningsToday();
       setDriverState(prev => ({
         ...prev,
-        todayEarnings: data.total_earnings || 0,
-        todayTrips: data.total_trips || 0,
+        todayEarnings: data.today_earnings || 0,
+        todayTrips: data.today_trips || 0,
       }));
     } catch (error) {
       console.error('Failed to fetch earnings:', error);

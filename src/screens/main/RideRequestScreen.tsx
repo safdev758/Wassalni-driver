@@ -44,8 +44,8 @@ export default function RideRequestScreen() {
     return null;
   }
 
-  const handleAccept = () => {
-    acceptRide(ride);
+  const handleAccept = async () => {
+    await acceptRide(ride);
     navigation.navigate('RideNavigation');
   };
 
