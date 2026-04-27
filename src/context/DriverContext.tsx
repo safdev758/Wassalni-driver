@@ -119,7 +119,6 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
       setDriverState(prev => ({ ...prev, isOnline }));
     } catch (error) {
       console.error('Failed to update status:', error);
-      setDriverState(prev => ({ ...prev, isOnline }));
     }
   };
 

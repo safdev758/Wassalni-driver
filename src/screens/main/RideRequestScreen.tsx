@@ -21,11 +21,10 @@ export default function RideRequestScreen() {
   const [countdown, setCountdown] = useState(12);
 
   const ride = driverState.pendingRide;
-  if (!ride) {
-    return null;
-  }
 
   useEffect(() => {
+    if (!ride) return;
+    setCountdown(12);
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -39,7 +38,11 @@ export default function RideRequestScreen() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [navigation, rejectRide]);
+  }, [ride, navigation, rejectRide]);
+
+  if (!ride) {
+    return null;
+  }
 
   const handleAccept = () => {
     acceptRide(ride);

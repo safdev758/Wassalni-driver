@@ -173,9 +173,11 @@ export type WSHandler = (msg: WSMessage) => void;
 let wsConnection: WebSocket | null = null;
 let wsHandlers: WSHandler[] = [];
 let wsReconnectTimer: ReturnType<typeof setTimeout> | null = null;
+let wsIntentionalClose = false;
 
 export const connectWebSocket = () => {
   if (wsConnection?.readyState === WebSocket.OPEN) return;
+  wsIntentionalClose = false;
 
   const url = `${WS_BASE_URL}/ws?token=${accessToken}`;
   wsConnection = new WebSocket(url);
@@ -197,13 +199,16 @@ export const connectWebSocket = () => {
   };
 
   wsConnection.onclose = () => {
-    wsReconnectTimer = setTimeout(connectWebSocket, 3000);
+    if (!wsIntentionalClose) {
+      wsReconnectTimer = setTimeout(connectWebSocket, 3000);
+    }
   };
 
   wsConnection.onerror = () => {};
 };
 
 export const disconnectWebSocket = () => {
+  wsIntentionalClose = true;
   if (wsReconnectTimer) {
     clearTimeout(wsReconnectTimer);
     wsReconnectTimer = null;
