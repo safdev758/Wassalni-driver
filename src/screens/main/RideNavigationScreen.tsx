@@ -18,16 +18,21 @@ export default function RideNavigationScreen() {
   const { driverState, completeRide, updateEarnings } = useDriver();
   const ride = driverState.currentRide;
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     if (ride) {
       updateEarnings(ride.estimatedFare);
     }
-    completeRide();
-    Alert.alert(
-      t('rideNavigation.rideCompleted'),
-      t('rideNavigation.rideCompletedDescription'),
-      [{ text: t('common.done'), onPress: () => navigation.navigate('MainTabs') }],
-    );
+    try {
+      await completeRide();
+      Alert.alert(
+        t('rideNavigation.rideCompleted'),
+        t('rideNavigation.rideCompletedDescription'),
+        [{ text: t('common.done'), onPress: () => navigation.navigate('MainTabs') }],
+      );
+    } catch (error) {
+      console.error('Failed to complete ride:', error);
+      Alert.alert(t('common.error'), t('rideNavigation.completeError') || 'Failed to complete ride. Please try again.');
+    }
   };
 
   const handleCancel = () => {
@@ -39,8 +44,12 @@ export default function RideNavigationScreen() {
         {
           text: t('common.confirm'),
           style: 'destructive',
-          onPress: () => {
-            completeRide();
+          onPress: async () => {
+            try {
+              await completeRide();
+            } catch (error) {
+              console.error('Failed to cancel ride:', error);
+            }
             navigation.navigate('MainTabs');
           },
         },

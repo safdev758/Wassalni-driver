@@ -35,10 +35,10 @@ interface DriverState {
 
 interface DriverContextType {
   driverState: DriverState;
-  setOnline: (isOnline: boolean) => void;
-  acceptRide: (ride: Ride) => void;
+  setOnline: (isOnline: boolean) => Promise<void>;
+  acceptRide: (ride: Ride) => Promise<void>;
   rejectRide: () => void;
-  completeRide: () => void;
+  completeRide: () => Promise<void>;
   updateEarnings: (amount: number) => void;
   sendCounterOffer: (rideId: string, price: number) => Promise<void>;
   fetchEarnings: () => Promise<void>;
