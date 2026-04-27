@@ -64,10 +64,10 @@ const del = (path: string, body?: object) =>
 // --- Auth ---
 export const authAPI = {
   sendOTP: (phone: string) =>
-    post('/auth/phone/send', { phone, user_type: 'driver' }),
+    post('/driver/auth/phone/send', { phone, country_code: 'DZ' }),
 
   verifyOTP: (phone: string, code: string) =>
-    post('/auth/phone/verify', { phone, code, user_type: 'driver' }),
+    post('/driver/auth/phone/verify', { phone, code }),
 };
 
 // --- Driver Profile ---
@@ -164,7 +164,7 @@ let wsReconnectTimer: ReturnType<typeof setTimeout> | null = null;
 let wsIntentionalClose = false;
 
 export const connectWebSocket = () => {
-  if (wsConnection?.readyState === WebSocket.OPEN) return;
+  if (wsConnection?.readyState === WebSocket.OPEN || wsConnection?.readyState === WebSocket.CONNECTING) return;
   wsIntentionalClose = false;
 
   const url = `${WS_BASE_URL}/ws?token=${accessToken}`;

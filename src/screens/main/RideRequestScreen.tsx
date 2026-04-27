@@ -45,8 +45,13 @@ export default function RideRequestScreen() {
   }
 
   const handleAccept = async () => {
-    await acceptRide(ride);
-    navigation.navigate('RideNavigation');
+    try {
+      await acceptRide(ride);
+      navigation.navigate('RideNavigation');
+    } catch (error) {
+      console.error('Failed to accept ride:', error);
+      navigation.goBack();
+    }
   };
 
   const handleReject = () => {

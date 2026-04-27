@@ -123,16 +123,12 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
   };
 
   const acceptRide = async (ride: Ride) => {
-    try {
-      await rideAPI.accept(ride.id);
-      setDriverState(prev => ({
-        ...prev,
-        currentRide: ride,
-        pendingRide: null,
-      }));
-    } catch (error) {
-      console.error('Failed to accept ride:', error);
-    }
+    await rideAPI.accept(ride.id);
+    setDriverState(prev => ({
+      ...prev,
+      currentRide: ride,
+      pendingRide: null,
+    }));
   };
 
   const rejectRide = () => {
