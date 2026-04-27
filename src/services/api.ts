@@ -165,6 +165,7 @@ let wsIntentionalClose = false;
 
 export const connectWebSocket = () => {
   if (wsConnection?.readyState === WebSocket.OPEN || wsConnection?.readyState === WebSocket.CONNECTING) return;
+  if (!accessToken) return;
   wsIntentionalClose = false;
 
   const url = `${WS_BASE_URL}/ws?token=${accessToken}`;
